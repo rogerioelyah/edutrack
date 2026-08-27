@@ -69,7 +69,7 @@
 @media (max-height:900px){.cell{min-height:42px}.lab{min-height:42px}}
 
 </style></head><body>
-<header class="top"><div class="brand">EduTrack — Operação Manutenção <span style="color:#7dd3fc">v2.1 CONECTADO</span><small>Game Master • Manutenção e Melhoria de Software</small></div><div class="actions"><button class="btn" id="undo">↩ Desfazer</button><button class="btn" id="save">💾 Salvar</button><button class="btn" id="reset">↻ Reiniciar</button></div></header>
+<header class="top"><div class="brand">EduTrack — Operação Manutenção <span style="color:#7dd3fc">v2.2 CONECTADO</span><small>Game Master • Manutenção e Melhoria de Software</small></div><div class="actions"><button class="btn" id="undo">↩ Desfazer</button><button class="btn" id="save">💾 Salvar</button><button class="btn" id="reset">↻ Reiniciar</button></div></header>
 <section id="setup" class="hero"><div class="card"><div class="k">Configuração</div><h1>Equipes variáveis. 1 vencedora.</h1><p>Defina quantas equipes estão presentes hoje. O sistema cria a mesma quantidade de pistas e sorteia <b>Equipe × Pista</b> e a <b>ordem dos turnos</b>.</p><div style="display:flex;align-items:center;gap:10px;margin:16px 0"><label for="teamCount"><b>Quantidade de equipes:</b></label><select id="teamCount" class="btn" style="min-width:90px"></select><button class="btn" id="applyCount">APLICAR</button></div><div class="inputs" id="inputs"></div><div class="ma"><button class="btn primary" id="draw">🎲 Sortear pistas e ordem</button><button class="btn good hidden" id="start">▶ Iniciar operação</button></div><div id="drawResult" class="result hidden"></div></div></section>
 <section id="game" class="game hidden"><aside class="side"><div class="turn"><div class="ey">Turno atual</div><b id="now">—</b><div id="status"></div><div class="die" id="die">🎲</div><button class="btn primary" style="width:100%" id="roll">ROLAR DADO</button><button class="btn good" style="width:100%;margin-top:7px" id="moveSuggested">✓ MOVER PARA CASA SUGERIDA</button><div class="note" id="diceNote">A equipe destacada joga agora. Role o dado e clique manualmente na casa — ou use o botão verde para confirmar a casa sugerida.</div><div class="ma"><button class="btn" id="next">➡ Próxima (manual)</button><button class="btn" id="consume">⛔ CONSUMIR BLOQUEIO / PERDER TURNO</button></div></div><table><thead><tr><th>Equipe</th><th>P</th><th>C</th><th>Pts</th><th>Status</th></tr></thead><tbody id="scores"></tbody></table></aside><main class="board"><div class="boardHead"><b>Mapa da Manutenção</b><div class="legend">🚨 Desafio · 🎁 Vantagem · 💀 Revés · 🔥 Incidente · ⚡ Rápida · ☎️ Diretoria · 🔄 Reorganização · ☠️ Crítico · 🏆 Final</div></div><div class="scroll"><div class="track" id="track"></div></div></main></section>
 <div id="modal"></div><div id="toast" class="toast hidden"></div>
@@ -246,15 +246,19 @@ function judge(){
 }
 function mark(id,v){let t=team(id);if(!t||t.blocked)return toast('🔒 Equipe bloqueada não participa desta questão.');R[id]=!!v;let e=$('j'+id);e.classList.remove('mkok','mkno');e.classList.add(v?'mkok':'mkno')}
 function confirmResults(){
+  if(!M || M.kind!=='q')return toast('Não há questão coletiva ativa para corrigir.');
   snap();
+  const currentId=M.teamId;
+  const currentTeam=team(currentId);
   Object.entries(R).forEach(([id,v])=>{
-    let rt=team(id);
-    if(rt && !rt.blocked && v)pts(rt,1);
+    const rt=team(id);
+    if(rt && !rt.blocked && v===true)pts(rt,1);
   });
-  let t=team(M.teamId);
-  if(!t.blocked && R[t.id]===false)t.blocked=1;
-  save();render();
-  let msg=(!t.blocked&&R[t.id]===false)?`${t.name}: bloqueada por 1 turno. Próxima equipe em jogo.`:'Resultados registrados. Próxima equipe em jogo.';
+  const currentWrong=!!(currentTeam && !currentTeam.blocked && R[currentId]===false);
+  if(currentWrong)currentTeam.blocked=1;
+  save();
+  render();
+  const msg=currentWrong?`${currentTeam.name}: bloqueada por 1 turno quando voltar a jogar. Próxima equipe em jogo.`:'Resultados registrados. Próxima equipe em jogo.';
   finishTurn(msg);
 }
 function event(t,p,type,e){M={kind:'event',teamId:t.id,pos:p,type,event:e};modal(`<div class="mh"><div><div class="ey">${I[type]} CASA ${p}</div><h2>${type==='adv'?'VANTAGEM':type==='set'?'REVÉS':'REORGANIZAÇÃO'}</h2></div></div><div class="mb"><div class="q">${e[0]}</div><div class="opt">${e[1]}</div><div class="ma"><button class="btn ${type==='adv'?'good':type==='set'?'bad':'warn'}" onclick="applyEvent()">APLICAR EFEITO</button><button class="btn" onclick="closeM()">Cancelar</button></div></div>`)}
@@ -268,7 +272,7 @@ function activateForcedMove(t,newPos,reason){
     t.power=null;
     save();render();closeM();
     toast(`🛡️ ${t.name} usou o ESCUDO e anulou a penalidade de voltar casas.`);
-    setTimeout(()=>next(),650);
+    setTimeout(()=>next(true),650);
     return;
   }
 
@@ -419,7 +423,7 @@ function applyOneShotDuel(){
   S.lastOpponent=b.id;
   save();render();closeM();
   toast('Sala de Incidentes encerrada. Quem errou ficou bloqueado por 1 turno.');
-  setTimeout(()=>next(),350);
+  setTimeout(()=>next(true),350);
 }
 function critical(ch,p){let o=opponent(ch);if(!o)return toast('Sem adversária elegível.');M={kind:'crit',ch:ch.id,op:o.id,pos:p,sa:0,sb:0,idx:0,qs:sh([...DUEL.assets,...DUEL.supplier,...DUEL.roles]).slice(0,6)};critQ()}
 function critQ(){let m=M,a=team(m.ch),b=team(m.op);if(m.idx>=5)return critEnd();let qq=shuffledQuestion(m.qs[m.idx]);m.qq=qq;R={};modal(`<div class="mh"><div><div class="ey">☠️ INCIDENTE CRÍTICO • ${m.idx+1}/5</div><h2>${a.name} × ${b.name}</h2></div><div class="timer" id="tm">35s</div></div>${qPreludeMarkup(`<div class="duel"><div class="dt"><div class="nm">${a.name}</div><div class="sc">${m.sa}</div></div><div class="vs">VS</div><div class="dt"><div class="nm">${b.name}</div><div class="sc">${m.sb}</div></div></div><div class="q">${qq.text}</div>${qq.opts.map(o=>`<div class="opt">${o}</div>`).join('')}<div id="ans" class="ans hidden"><b>Resposta correta:</b> ${qq.opts[qq.correct]}</div><div class="ma"><button class="btn primary" onclick="play(35)">↻ Reiniciar cronômetro</button><button class="btn good" onclick="revealCrit()">👁 Revelar resposta</button><button id="cjb" class="btn hidden" onclick="critJudge()">▶ Julgar</button></div><div id="cj" class="hidden"></div>`)}`);setTimeout(()=>preQuestion(35),80)}
@@ -472,9 +476,9 @@ function guardedSafeOpenCell(t,p){
 function safeOpenCell(t,p){try{openCell(t,p)}catch(e){showGameError(e.message,location.href,null,null,e)}}
 
 function openCell(t,p){let type=T[p],idx=(t.lane-1)%7;if(['challenge','quick','board'].includes(type))ask(t,p,type,getQ(p,t.lane));else if(type==='adv')event(t,p,type,ADV[idx]);else if(type==='set')event(t,p,type,SET[idx]);else if(type==='reorg')event(t,p,type,REORG[idx]);else if(type==='n1'||type==='n2')incident(t,p,type);else if(type==='crit')critical(t,p);else final(t)}
-function finishTurn(msg){closeM();next();if(msg)toast(msg)}
-function next(){
-  if(blockGateActive())return toast(blockGateMessage());
+function finishTurn(msg){closeM();next(true);if(msg)toast(msg)}
+function next(force=false){
+  if(!force && blockGateActive())return toast(blockGateMessage());
   snap();
   const previous=cur();
   if(previous){
@@ -529,7 +533,7 @@ function next(){
   S.diceLocked=false;
   save();render();
   toast(`⛔ ${t.name}: bloqueio consumido. Turno perdido e partida liberada.`);
-  setTimeout(()=>next(),650);
+  setTimeout(()=>next(true),650);
 }function undo(){if(!S.hist.length)return toast('Nada para desfazer.');let h=S.hist,prev=JSON.parse(h.pop());S={...prev,hist:h};save();render();closeM();toast('Ação desfeita.')}
 function turnDiagnostic(){
   const lines=[
@@ -729,18 +733,18 @@ document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.le
         R={};
         Object.entries(results).forEach(([id,r])=>R[id]=!!r.correct);
         reveal();
-        setTimeout(()=>{confirmResults();setTimeout(showPodium,900)},800);
+        setTimeout(()=>{confirmResults();setTimeout(()=>{syncGame();showPodium()},950)},800);
       }else if(d.kind==='duel' && M && M.kind==='duel'){
         R={a:!!(results[M.ch]&&results[M.ch].correct),b:!!(results[M.op]&&results[M.op].correct)};
-        applyOneShotDuel();setTimeout(showPodium,1100);
+        applyOneShotDuel();setTimeout(()=>{syncGame();showPodium()},1150);
       }else if(d.kind==='critical' && M && M.kind==='critOne'){
         R={a:!!(results[M.ch]&&results[M.ch].correct),b:!!(results[M.op]&&results[M.op].correct)};
         revealCritOne();
-        setTimeout(()=>{critOneConfirm();setTimeout(showPodium,1000)},800);
+        setTimeout(()=>{critOneConfirm();setTimeout(()=>{syncGame();showPodium()},1050)},800);
       }else if(d.kind==='final' && M && M.kind==='finalOne'){
         const ok=!!(results[M.teamId]&&results[M.teamId].correct);
         revealFinalOne();
-        setTimeout(()=>{finalOneResult(ok?1:0);setTimeout(showPodium,900)},800);
+        setTimeout(()=>{finalOneResult(ok?1:0);setTimeout(()=>{syncGame();showPodium()},950)},800);
       }
     }catch(e){showGameError('Falha ao aplicar votação automática: '+e.message,location.href,null,null,e)}
   });
