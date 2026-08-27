@@ -69,7 +69,7 @@
 @media (max-height:900px){.cell{min-height:42px}.lab{min-height:42px}}
 
 </style></head><body>
-<header class="top"><div class="brand">EduTrack — Operação Manutenção <span style="color:#7dd3fc">v2.3 CONECTADO</span><small>Game Master • Manutenção e Melhoria de Software</small></div><div class="actions"><button class="btn" id="undo">↩ Desfazer</button><button class="btn" id="save">💾 Salvar</button><button class="btn" id="reset">↻ Reiniciar</button></div></header>
+<header class="top"><div class="brand">EduTrack — Operação Manutenção <span style="color:#7dd3fc">v2.4 CONECTADO</span><small>Game Master • Manutenção e Melhoria de Software</small></div><div class="actions"><button class="btn" id="undo">↩ Desfazer</button><button class="btn" id="save">💾 Salvar</button><button class="btn" id="reset">↻ Reiniciar</button></div></header>
 <section id="setup" class="hero"><div class="card"><div class="k">Configuração</div><h1>Equipes variáveis. 1 vencedora.</h1><p>Defina quantas equipes estão presentes hoje. O sistema cria a mesma quantidade de pistas e sorteia <b>Equipe × Pista</b> e a <b>ordem dos turnos</b>.</p><div style="display:flex;align-items:center;gap:10px;margin:16px 0"><label for="teamCount"><b>Quantidade de equipes:</b></label><select id="teamCount" class="btn" style="min-width:90px"></select><button class="btn" id="applyCount">APLICAR</button></div><div class="inputs" id="inputs"></div><div class="ma"><button class="btn primary" id="draw">🎲 Sortear pistas e ordem</button><button class="btn good hidden" id="start">▶ Iniciar operação</button></div><div id="drawResult" class="result hidden"></div></div></section>
 <section id="game" class="game hidden"><aside class="side"><div class="turn"><div class="ey">Turno atual</div><b id="now">—</b><div id="status"></div><div class="die" id="die">🎲</div><button class="btn primary" style="width:100%" id="roll">ROLAR DADO</button><button class="btn good" style="width:100%;margin-top:7px" id="moveSuggested">✓ MOVER PARA CASA SUGERIDA</button><div class="note" id="diceNote">A equipe destacada joga agora. Role o dado e clique manualmente na casa — ou use o botão verde para confirmar a casa sugerida.</div><div class="ma"><button class="btn" id="next">➡ Próxima (manual)</button><button class="btn" id="consume">⛔ CONSUMIR BLOQUEIO / PERDER TURNO</button></div></div><table><thead><tr><th>Equipe</th><th>P</th><th>C</th><th>Pts</th><th>Status</th></tr></thead><tbody id="scores"></tbody></table></aside><main class="board"><div class="boardHead"><b>Mapa da Manutenção</b><div class="legend">🚨 Desafio · 🎁 Vantagem · 💀 Revés · 🔥 Incidente · ⚡ Rápida · ☎️ Diretoria · 🔄 Reorganização · ☠️ Crítico · 🏆 Final</div></div><div class="scroll"><div class="track" id="track"></div></div></main></section>
 <div id="modal"></div><div id="toast" class="toast hidden"></div>
@@ -607,6 +607,116 @@ document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.le
 #podiumClose{margin-top:22px;min-width:220px}
 @media(max-width:650px){#podium{gap:7px}.pod{width:32%}.pod .team{font-size:14px}.p1 .block{height:180px}.p2 .block{height:140px}.p3 .block{height:105px}}
 
+
+/* v2.4 — perguntas em tela cheia */
+.modalBg{padding:0!important}
+.modal{
+  width:100vw!important;
+  height:100vh!important;
+  max-height:100vh!important;
+  border-radius:0!important;
+  border:0!important;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden!important;
+}
+.modal .mh{
+  flex:0 0 auto;
+  padding:20px 34px!important;
+  background:#081421;
+}
+.modal .mb{
+  flex:1 1 auto;
+  overflow:auto;
+  padding:28px 5vw 34px!important;
+}
+.modal .q{
+  font-size:clamp(30px,3.2vw,54px)!important;
+  line-height:1.22!important;
+  max-width:1500px;
+  margin:18px auto 28px!important;
+  text-align:center;
+}
+.modal .opt{
+  font-size:clamp(22px,2vw,34px)!important;
+  padding:18px 24px!important;
+  max-width:1350px;
+  margin:12px auto!important;
+}
+.modal .ma{
+  justify-content:center;
+  max-width:1350px;
+  margin:24px auto 0!important;
+}
+.modal .timer{
+  font-size:44px!important;
+}
+.modal .ans{
+  max-width:1350px;
+  margin:24px auto!important;
+  font-size:22px;
+}
+.modal .duel{
+  max-width:1200px;
+  margin:18px auto!important;
+}
+.modal .duelJudge{
+  max-width:1200px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+/* Popup de resposta */
+#answerOverlay{
+  position:fixed;inset:0;z-index:650;
+  background:rgba(1,5,11,.96);
+  display:none;align-items:center;justify-content:center;
+  padding:28px;
+}
+#answerOverlay.show{display:flex}
+#answerCard{
+  width:min(1050px,94vw);
+  background:#071522;
+  border:1px solid #31526c;
+  border-radius:26px;
+  padding:34px;
+  box-shadow:0 30px 110px #000c;
+  text-align:center;
+}
+#answerCard .answerKicker{
+  color:#7dd3fc;
+  text-transform:uppercase;
+  letter-spacing:.14em;
+  font-size:13px;
+  font-weight:1000;
+}
+#answerCard h2{
+  font-size:clamp(34px,4vw,58px);
+  margin:12px 0 16px;
+}
+#answerCard .correctAnswer{
+  font-size:clamp(26px,3vw,44px);
+  font-weight:1000;
+  padding:22px;
+  border-radius:18px;
+  background:#14532d33;
+  border:1px solid #166534;
+  margin:18px auto;
+}
+#answerCard .answerWhy{
+  font-size:clamp(18px,1.7vw,26px);
+  line-height:1.5;
+  color:#cbd5e1;
+  max-width:900px;
+  margin:14px auto 0;
+}
+#answerCountdown{
+  margin-top:24px;
+  font-size:17px;
+  color:#fde68a;
+  font-weight:900;
+}
+
 </style>
 <div id="liveBox">
   <h3>📡 Votação conectada</h3>
@@ -616,6 +726,17 @@ document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.le
   <img id="liveQR" alt="QR Code dos alunos">
   <div class="tiny" id="liveURL"></div>
   <div class="liveActions"><button class="btn warn" id="closeVoteNow">Encerrar votação</button><button class="btn bad" id="recoverHouse">Liberar casa</button></div>
+</div>
+
+
+<div id="answerOverlay">
+  <div id="answerCard">
+    <div class="answerKicker">RESPOSTA DA QUESTÃO</div>
+    <h2 id="answerHeadline">Resposta correta</h2>
+    <div class="correctAnswer" id="answerCorrect">—</div>
+    <div class="answerWhy" id="answerWhy"></div>
+    <div id="answerCountdown">Próxima tela em 6s</div>
+  </div>
 </div>
 
 <div id="podiumOverlay">
@@ -659,6 +780,34 @@ document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.le
     const c=document.getElementById('liveCount');
     if(s)s.textContent=text||'';
     if(c)c.textContent=`${count||0}/${total||0}`;
+  }
+
+  function showAnswerPopup(data,onDone){
+    const ov=document.getElementById('answerOverlay');
+    const correct=document.getElementById('answerCorrect');
+    const why=document.getElementById('answerWhy');
+    const cd=document.getElementById('answerCountdown');
+    if(!ov){ if(onDone)onDone(); return; }
+
+    correct.textContent=(data&&data.correctText)?data.correctText:'Resposta registrada.';
+    why.textContent=(data&&data.why)?data.why:'';
+    why.style.display=(data&&data.why)?'block':'none';
+
+    ov.classList.add('show');
+    let n=6;
+    cd.textContent=`Próxima tela em ${n}s`;
+    clearInterval(window.__answerInterval);
+    clearTimeout(window.__answerTimer);
+    window.__answerInterval=setInterval(()=>{
+      n--;
+      cd.textContent=n>0?`Próxima tela em ${n}s`:'';
+      if(n<=0)clearInterval(window.__answerInterval);
+    },1000);
+    window.__answerTimer=setTimeout(()=>{
+      clearInterval(window.__answerInterval);
+      ov.classList.remove('show');
+      if(onDone)onDone();
+    },6000);
   }
 
   function showPodium(){
@@ -786,8 +935,12 @@ document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.le
     const results=d.results||{};
     try{
       if(d.kind==='collective' && M && M.kind==='q'){
+        const answerData={
+          correctText:(M.q&&M.q.opts)?M.q.opts[M.q.correct]:'Resposta correta',
+          why:(M.q&&M.q.why)?M.q.why:''
+        };
         const ok=finalizeCollectiveVote(results);
-        if(ok)setTimeout(()=>{syncGame();showPodium()},650);
+        if(ok)setTimeout(()=>showAnswerPopup(answerData,()=>{syncGame();showPodium()}),450);
       }else if(d.kind==='duel' && M && M.kind==='duel'){
         R={a:!!(results[M.ch]&&results[M.ch].correct),b:!!(results[M.op]&&results[M.op].correct)};
         applyOneShotDuel();setTimeout(()=>{syncGame();showPodium()},1150);

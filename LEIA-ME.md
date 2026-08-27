@@ -39,3 +39,12 @@ Após o fechamento e correção automática de uma votação, o painel do profes
 - O placar é sincronizado novamente depois da pontuação e depois da troca de turno.
 - O painel do professor recupera o identificador da votação se a página reconectar durante uma questão.
 - Foi adicionado o botão **Liberar casa** como recuperação de emergência. Use somente se a votação já terminou e o jogo continuar preso.
+
+
+## v2.4 — experiência de projeção
+- Perguntas e alternativas agora ocupam a tela inteira do projetor.
+- Tipografia maior para leitura em sala.
+- Ao fechar a votação, aparece um popup exclusivo com a resposta correta.
+- A explicação da questão também aparece quando disponível.
+- O popup permanece por 6 segundos para leitura.
+- Depois dele, o pódio é exibido automaticamente.
