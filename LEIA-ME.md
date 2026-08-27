@@ -65,3 +65,20 @@ Após o fechamento e correção automática de uma votação, o painel do profes
 - Vale sempre a última alternativa enviada antes do encerramento.
 - A votação não fecha automaticamente quando todas as equipes respondem; permanece aberta até o cronômetro terminar ou o professor encerrar manualmente.
 - O botão selecionado permanece destacado no celular para indicar a resposta atual.
+
+
+## v2.7 — questões autocontidas
+- Reformuladas perguntas e explicações que pressupunham contato prévio com “o material”, tabelas ou exemplos externos.
+- As questões passam a apresentar o conceito ou situação de forma autocontida.
+- Mantidos os conteúdos e gabaritos; foi alterada apenas a dependência de referências externas.
+
+
+## v2.8 — Sala da Diretoria: Desafio Final
+- Chegar à Casa 36 dá direito de disputar a vitória; não significa vitória automática.
+- Cada tentativa tem até 5 perguntas.
+- A equipe vence assim que alcançar 3 acertos.
+- A tentativa termina imediatamente ao atingir 3 erros, pois 3/5 já se torna impossível.
+- Se falhar, a equipe permanece na Casa 36 e a partida segue para as demais equipes.
+- No próximo turno, a equipe que permaneceu na Casa 36 pode fazer uma nova tentativa.
+- As perguntas são sorteadas sem repetição dentro da mesma tentativa, usando o banco final e questões de síntese.
+- O painel mostra acertos, erros, questão atual e quanto falta para vencer.
