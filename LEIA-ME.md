@@ -31,3 +31,11 @@ Após o fechamento e correção automática de uma votação, o painel do profes
 - por último 1º lugar;
 - exibe pontos e casa atual;
 - volta automaticamente ao tabuleiro após alguns segundos ou pelo botão “VOLTAR AO TABULEIRO”.
+
+
+## v2.3 — correção do travamento após votação
+- A votação coletiva agora finaliza a casa diretamente, sem depender do painel manual de julgamento.
+- A rotina limpa `dice` e `diceLocked` antes de trocar a equipe.
+- O placar é sincronizado novamente depois da pontuação e depois da troca de turno.
+- O painel do professor recupera o identificador da votação se a página reconectar durante uma questão.
+- Foi adicionado o botão **Liberar casa** como recuperação de emergência. Use somente se a votação já terminou e o jogo continuar preso.

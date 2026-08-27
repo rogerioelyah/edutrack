@@ -69,7 +69,7 @@
 @media (max-height:900px){.cell{min-height:42px}.lab{min-height:42px}}
 
 </style></head><body>
-<header class="top"><div class="brand">EduTrack — Operação Manutenção <span style="color:#7dd3fc">v2.2 CONECTADO</span><small>Game Master • Manutenção e Melhoria de Software</small></div><div class="actions"><button class="btn" id="undo">↩ Desfazer</button><button class="btn" id="save">💾 Salvar</button><button class="btn" id="reset">↻ Reiniciar</button></div></header>
+<header class="top"><div class="brand">EduTrack — Operação Manutenção <span style="color:#7dd3fc">v2.3 CONECTADO</span><small>Game Master • Manutenção e Melhoria de Software</small></div><div class="actions"><button class="btn" id="undo">↩ Desfazer</button><button class="btn" id="save">💾 Salvar</button><button class="btn" id="reset">↻ Reiniciar</button></div></header>
 <section id="setup" class="hero"><div class="card"><div class="k">Configuração</div><h1>Equipes variáveis. 1 vencedora.</h1><p>Defina quantas equipes estão presentes hoje. O sistema cria a mesma quantidade de pistas e sorteia <b>Equipe × Pista</b> e a <b>ordem dos turnos</b>.</p><div style="display:flex;align-items:center;gap:10px;margin:16px 0"><label for="teamCount"><b>Quantidade de equipes:</b></label><select id="teamCount" class="btn" style="min-width:90px"></select><button class="btn" id="applyCount">APLICAR</button></div><div class="inputs" id="inputs"></div><div class="ma"><button class="btn primary" id="draw">🎲 Sortear pistas e ordem</button><button class="btn good hidden" id="start">▶ Iniciar operação</button></div><div id="drawResult" class="result hidden"></div></div></section>
 <section id="game" class="game hidden"><aside class="side"><div class="turn"><div class="ey">Turno atual</div><b id="now">—</b><div id="status"></div><div class="die" id="die">🎲</div><button class="btn primary" style="width:100%" id="roll">ROLAR DADO</button><button class="btn good" style="width:100%;margin-top:7px" id="moveSuggested">✓ MOVER PARA CASA SUGERIDA</button><div class="note" id="diceNote">A equipe destacada joga agora. Role o dado e clique manualmente na casa — ou use o botão verde para confirmar a casa sugerida.</div><div class="ma"><button class="btn" id="next">➡ Próxima (manual)</button><button class="btn" id="consume">⛔ CONSUMIR BLOQUEIO / PERDER TURNO</button></div></div><table><thead><tr><th>Equipe</th><th>P</th><th>C</th><th>Pts</th><th>Status</th></tr></thead><tbody id="scores"></tbody></table></aside><main class="board"><div class="boardHead"><b>Mapa da Manutenção</b><div class="legend">🚨 Desafio · 🎁 Vantagem · 💀 Revés · 🔥 Incidente · ⚡ Rápida · ☎️ Diretoria · 🔄 Reorganização · ☠️ Crítico · 🏆 Final</div></div><div class="scroll"><div class="track" id="track"></div></div></main></section>
 <div id="modal"></div><div id="toast" class="toast hidden"></div>
@@ -194,7 +194,7 @@ function roll(){
     }
   },80);
 }
-function moveTeamTo(t,p){if(!t)return; p=Math.max(1,Math.min(36,Number(p)||1)); snap(); t.pos=p; S.dice=null; S.revealed=S.revealed||{};S.revealed[t.lane+'-'+p]=true; render(); save(); guardedSafeOpenCell(t,p)}
+function moveTeamTo(t,p){if(!t)return; p=Math.max(1,Math.min(36,Number(p)||1)); snap(); t.pos=p; S.dice=null; /* diceLocked permanece true até a casa ser resolvida */ S.revealed=S.revealed||{};S.revealed[t.lane+'-'+p]=true; render(); save(); guardedSafeOpenCell(t,p)}
 function cell(l,p){let t=cur();if(!t)return toast('Nenhuma equipe no turno atual.');if(blockGateActive())return toast(blockGateMessage());if(Number(t.lane)!==Number(l))return toast(`Turno de ${t.name}: use a Pista ${t.lane}.`);moveTeamTo(t,p)}
 function moveSuggested(){let t=cur();if(!t)return toast('Nenhuma equipe no turno atual.');if(blockGateActive())return toast(blockGateMessage());if(!S.dice)return toast('Role o dado primeiro.');moveTeamTo(t,Math.min(36,t.pos+S.dice))}
 function getQ(p,l){let b=Q[p]||Q[35];return b[(l-1)%b.length]}
@@ -615,7 +615,7 @@ document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.le
   <div id="liveVoteText" class="tiny">Nenhuma votação aberta.</div>
   <img id="liveQR" alt="QR Code dos alunos">
   <div class="tiny" id="liveURL"></div>
-  <div class="liveActions"><button class="btn warn" id="closeVoteNow">Encerrar votação</button></div>
+  <div class="liveActions"><button class="btn warn" id="closeVoteNow">Encerrar votação</button><button class="btn bad" id="recoverHouse">Liberar casa</button></div>
 </div>
 
 <div id="podiumOverlay">
@@ -690,6 +690,57 @@ document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.le
     clearTimeout(window.__podiumTimer);
     document.getElementById('podiumOverlay').classList.remove('show');
   };
+  function finalizeCollectiveVote(results){
+    // Finalização atômica: a casa deixa de depender do painel manual de julgamento.
+    if(!M || M.kind!=='q'){
+      toast('A votação terminou, mas a questão não está mais ativa. Use “Liberar casa” se necessário.');
+      return false;
+    }
+    const ctx={teamId:M.teamId,pos:M.pos,type:M.type};
+    const currentTeam=team(ctx.teamId);
+    snap();
+
+    Object.entries(results||{}).forEach(([id,r])=>{
+      const rt=team(id);
+      if(rt && !rt.eliminated && !rt.blocked && r && r.correct===true) pts(rt,1);
+    });
+
+    const curResult=(results||{})[ctx.teamId];
+    const currentWrong=!!(currentTeam && !currentTeam.eliminated && !currentTeam.blocked &&
+      (!curResult || curResult.correct!==true));
+    if(currentWrong) currentTeam.blocked=1;
+
+    // A casa foi resolvida: remova explicitamente qualquer pendência do dado ANTES de avançar.
+    S.dice=null;
+    S.diceLocked=false;
+    save();
+    render();
+    closeM();
+
+    const msg=currentWrong
+      ?`${currentTeam.name}: resposta incorreta; bloqueio armado para o próximo turno.`
+      :'Questão corrigida automaticamente.';
+    next(true);
+    syncGame();
+    toast(msg);
+    return true;
+  }
+
+  function recoverPendingHouse(){
+    const t=cur();
+    if(!t)return toast('Nenhuma equipe ativa.');
+    if(!S.diceLocked && !M)return toast('Não há casa pendente para liberar.');
+    if(!confirm(`Liberar manualmente a casa pendente de ${t.name} e avançar o turno? Use apenas se a votação já terminou e o jogo ficou preso.`))return;
+    S.dice=null;
+    S.diceLocked=false;
+    closeM();
+    save();
+    render();
+    next(true);
+    syncGame();
+    toast('Casa liberada manualmente. Próxima equipe em jogo.');
+  }
+
   function openVote(cfg){
     if(voteBusy || !cfg || !cfg.question)return;
     voteBusy=true;
@@ -719,6 +770,11 @@ document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.le
   socket.on('disconnect',()=>{
     const st=document.getElementById('liveStatus'); if(st){st.textContent='offline';st.style.color='#fda4af'}
   });
+  socket.on('vote:open',v=>{
+    if(!v || !v.voteId)return;
+    currentVoteId=v.voteId;
+    setLive(`Votação aberta • ${v.kind||''}`,(v.alreadyVotedTeamIds||[]).length,(v.eligibleTeamIds||[]).length);
+  });
   socket.on('vote:progress',d=>{
     if(d.voteId!==currentVoteId)return;
     setLive(`Votação aberta • ${d.kind||''}`,d.count,d.total);
@@ -730,10 +786,8 @@ document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.le
     const results=d.results||{};
     try{
       if(d.kind==='collective' && M && M.kind==='q'){
-        R={};
-        Object.entries(results).forEach(([id,r])=>R[id]=!!r.correct);
-        reveal();
-        setTimeout(()=>{confirmResults();setTimeout(()=>{syncGame();showPodium()},950)},800);
+        const ok=finalizeCollectiveVote(results);
+        if(ok)setTimeout(()=>{syncGame();showPodium()},650);
       }else if(d.kind==='duel' && M && M.kind==='duel'){
         R={a:!!(results[M.ch]&&results[M.ch].correct),b:!!(results[M.op]&&results[M.op].correct)};
         applyOneShotDuel();setTimeout(()=>{syncGame();showPodium()},1150);
@@ -754,6 +808,7 @@ document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.le
     if(!currentVoteId)return toast('Nenhuma votação aberta.');
     socket.emit('professor:closeVote',{voteId:currentVoteId});
   };
+  document.getElementById('recoverHouse').onclick=recoverPendingHouse;
 
   const oldRender=render;
   render=function(){ oldRender(); syncGame(); };
