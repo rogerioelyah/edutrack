@@ -69,7 +69,7 @@
 @media (max-height:900px){.cell{min-height:42px}.lab{min-height:42px}}
 
 </style></head><body>
-<header class="top"><div class="brand">EduTrack — Operação Manutenção <span style="color:#7dd3fc">v2.4 CONECTADO</span><small>Game Master • Manutenção e Melhoria de Software</small></div><div class="actions"><button class="btn" id="undo">↩ Desfazer</button><button class="btn" id="save">💾 Salvar</button><button class="btn" id="reset">↻ Reiniciar</button></div></header>
+<header class="top"><div class="brand">EduTrack — Operação Manutenção <span style="color:#7dd3fc">v2.6 CONECTADO</span><small>Game Master • Manutenção e Melhoria de Software</small></div><div class="actions"><button class="btn" id="undo">↩ Desfazer</button><button class="btn" id="save">💾 Salvar</button><button class="btn" id="reset">↻ Reiniciar</button></div></header>
 <section id="setup" class="hero"><div class="card"><div class="k">Configuração</div><h1>Equipes variáveis. 1 vencedora.</h1><p>Defina quantas equipes estão presentes hoje. O sistema cria a mesma quantidade de pistas e sorteia <b>Equipe × Pista</b> e a <b>ordem dos turnos</b>.</p><div style="display:flex;align-items:center;gap:10px;margin:16px 0"><label for="teamCount"><b>Quantidade de equipes:</b></label><select id="teamCount" class="btn" style="min-width:90px"></select><button class="btn" id="applyCount">APLICAR</button></div><div class="inputs" id="inputs"></div><div class="ma"><button class="btn primary" id="draw">🎲 Sortear pistas e ordem</button><button class="btn good hidden" id="start">▶ Iniciar operação</button></div><div id="drawResult" class="result hidden"></div></div></section>
 <section id="game" class="game hidden"><aside class="side"><div class="turn"><div class="ey">Turno atual</div><b id="now">—</b><div id="status"></div><div class="die" id="die">🎲</div><button class="btn primary" style="width:100%" id="roll">ROLAR DADO</button><button class="btn good" style="width:100%;margin-top:7px" id="moveSuggested">✓ MOVER PARA CASA SUGERIDA</button><div class="note" id="diceNote">A equipe destacada joga agora. Role o dado e clique manualmente na casa — ou use o botão verde para confirmar a casa sugerida.</div><div class="ma"><button class="btn" id="next">➡ Próxima (manual)</button><button class="btn" id="consume">⛔ CONSUMIR BLOQUEIO / PERDER TURNO</button></div></div><table><thead><tr><th>Equipe</th><th>P</th><th>C</th><th>Pts</th><th>Status</th></tr></thead><tbody id="scores"></tbody></table></aside><main class="board"><div class="boardHead"><b>Mapa da Manutenção</b><div class="legend">🚨 Desafio · 🎁 Vantagem · 💀 Revés · 🔥 Incidente · ⚡ Rápida · ☎️ Diretoria · 🔄 Reorganização · ☠️ Crítico · 🏆 Final</div></div><div class="scroll"><div class="track" id="track"></div></div></main></section>
 <div id="modal"></div><div id="toast" class="toast hidden"></div>
@@ -719,6 +719,7 @@ document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.le
 
 </style>
 <div id="liveBox">
+  <button id="closeLiveBox" title="Fechar painel QR" style="position:absolute;right:8px;top:8px;width:30px;height:30px;border-radius:50%;padding:0;background:#17283a;color:#fff;border:1px solid #49657a;font-weight:1000">×</button>
   <h3>📡 Votação conectada</h3>
   <div class="liveRow"><span>Status</span><b id="liveStatus">conectando...</b></div>
   <div class="liveRow"><span>Respostas</span><b class="liveCount" id="liveCount">0/0</b></div>
@@ -726,8 +727,23 @@ document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.le
   <img id="liveQR" alt="QR Code dos alunos">
   <div class="tiny" id="liveURL"></div>
   <div class="liveActions"><button class="btn warn" id="closeVoteNow">Encerrar votação</button><button class="btn bad" id="recoverHouse">Liberar casa</button></div>
+  <div class="liveActions"><button class="btn" id="cancelVoteNow">Cancelar votação / destravar</button></div>
 </div>
+<button id="reopenLiveBox" class="btn" style="display:none;position:fixed;right:16px;top:78px;z-index:56">📱 QR / Votação</button>
 
+
+
+<div id="diagOverlay" style="display:none;position:fixed;inset:0;z-index:9999;background:#030712ee;padding:24px;overflow:auto">
+  <div style="max-width:1000px;margin:auto;background:#0b1726;border:1px solid #fb7185;border-radius:18px;padding:22px">
+    <h2 style="margin-top:0;color:#fda4af">⚠️ Diagnóstico do EduTrack</h2>
+    <p>Copie o conteúdo abaixo e envie para mim. Ele não contém respostas dos alunos.</p>
+    <textarea id="diagText" readonly style="width:100%;height:390px;background:#020617;color:#e2e8f0;border:1px solid #334155;border-radius:10px;padding:12px;font:13px ui-monospace,monospace"></textarea>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn primary" id="copyDiag">COPIAR DIAGNÓSTICO</button>
+      <button class="btn" id="closeDiag">FECHAR</button>
+    </div>
+  </div>
+</div>
 
 <div id="answerOverlay">
   <div id="answerCard">
@@ -758,6 +774,47 @@ document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.le
   const socket=io();
   let currentVoteId=null;
   let voteBusy=false;
+
+  let lastSocketEvent='inicialização';
+  function diagSnapshot(err,source,line,col){
+    let t=null;
+    try{t=cur()}catch(_){}
+    const modalInfo=(typeof M!=='undefined'&&M)?{
+      kind:M.kind||null,type:M.type||null,pos:M.pos||null,teamId:M.teamId||M.ch||null
+    }:null;
+    const d={
+      versao:'EduTrack v2.5',
+      horario:new Date().toISOString(),
+      pagina:location.href,
+      online:navigator.onLine,
+      socketConectado:!!socket.connected,
+      socketId:socket.id||null,
+      ultimoEventoSocket:lastSocketEvent,
+      votacaoAtual:currentVoteId,
+      voteBusy:voteBusy,
+      equipeAtual:t?{id:t.id,nome:t.name,pista:t.lane,casa:t.pos,pontos:t.points,bloqueada:!!t.blocked}:null,
+      turno:(typeof S!=='undefined')?S.turnCount:null,
+      dado:(typeof S!=='undefined')?S.dice:null,
+      dadoTravado:(typeof S!=='undefined')?S.diceLocked:null,
+      bloqueioObrigatorio:(typeof S!=='undefined')?S.blockGateTeamId:null,
+      modal:modalInfo,
+      erro:err?String(err.message||err):null,
+      origem:source||null,
+      linha:line||null,
+      coluna:col||null,
+      stack:err&&err.stack?String(err.stack):null
+    };
+    return JSON.stringify(d,null,2);
+  }
+  function showDiag(err,source,line,col){
+    const ov=document.getElementById('diagOverlay');
+    const ta=document.getElementById('diagText');
+    if(!ov||!ta)return;
+    ta.value=diagSnapshot(err,source,line,col);
+    ov.style.display='block';
+  }
+  window.addEventListener('error',e=>showDiag(e.error||new Error(e.message),e.filename,e.lineno,e.colno));
+  window.addEventListener('unhandledrejection',e=>showDiag(e.reason instanceof Error?e.reason:new Error(String(e.reason)),'Promise',null,null));
 
   function studentURL(){
     return location.origin + '/aluno';
@@ -910,13 +967,15 @@ document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.le
   }
 
   socket.on('connect',()=>{
+    lastSocketEvent='connect';
     const st=document.getElementById('liveStatus'); if(st){st.textContent='online';st.style.color='#86efac'}
     const u=studentURL();
     const url=document.getElementById('liveURL'); if(url)url.textContent=u;
     const qr=document.getElementById('liveQR'); if(qr)qr.src='/qr.png?url='+encodeURIComponent(u);
     syncGame();
   });
-  socket.on('disconnect',()=>{
+  socket.on('disconnect',reason=>{
+    lastSocketEvent='disconnect: '+reason;
     const st=document.getElementById('liveStatus'); if(st){st.textContent='offline';st.style.color='#fda4af'}
   });
   socket.on('vote:open',v=>{
@@ -925,10 +984,12 @@ document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.le
     setLive(`Votação aberta • ${v.kind||''}`,(v.alreadyVotedTeamIds||[]).length,(v.eligibleTeamIds||[]).length);
   });
   socket.on('vote:progress',d=>{
+    lastSocketEvent='vote:progress';
     if(d.voteId!==currentVoteId)return;
     setLive(`Votação aberta • ${d.kind||''}`,d.count,d.total);
   });
   socket.on('vote:result',d=>{
+    lastSocketEvent='vote:result';
     if(d.voteId!==currentVoteId)return;
     currentVoteId=null;
     setLive('Votação encerrada — correção automática',d.count,d.total);
@@ -962,6 +1023,30 @@ document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.le
     socket.emit('professor:closeVote',{voteId:currentVoteId});
   };
   document.getElementById('recoverHouse').onclick=recoverPendingHouse;
+
+  document.getElementById('closeLiveBox').onclick=()=>{
+    document.getElementById('liveBox').style.display='none';
+    document.getElementById('reopenLiveBox').style.display='block';
+  };
+  document.getElementById('reopenLiveBox').onclick=()=>{
+    document.getElementById('liveBox').style.display='block';
+    document.getElementById('reopenLiveBox').style.display='none';
+  };
+  document.getElementById('cancelVoteNow').onclick=()=>{
+    if(!confirm('Cancelar a votação atual e destravar os controles? Use somente em caso de falha.'))return;
+    if(currentVoteId)socket.emit('professor:cancelVote',{voteId:currentVoteId});
+    currentVoteId=null; voteBusy=false;
+    S.dice=null; S.diceLocked=false;
+    try{closeM()}catch(_){}
+    save(); render(); syncGame();
+    setLive('Votação cancelada / controles liberados',0,0);
+    toast('Votação cancelada. Controles liberados.');
+  };
+  document.getElementById('copyDiag').onclick=async()=>{
+    const ta=document.getElementById('diagText');
+    try{await navigator.clipboard.writeText(ta.value);toast('Diagnóstico copiado.')}catch(_){ta.select();document.execCommand('copy');}
+  };
+  document.getElementById('closeDiag').onclick=()=>document.getElementById('diagOverlay').style.display='none';
 
   const oldRender=render;
   render=function(){ oldRender(); syncGame(); };

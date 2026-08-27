@@ -19,7 +19,7 @@ app.get('/qr.png',async(req,res)=>{
 
 function publicVote(){
  if(!vote)return null;
- return {voteId:vote.voteId,open:vote.open,optionCount:vote.optionCount,eligibleTeamIds:vote.eligibleTeamIds,kind:vote.kind,alreadyVotedTeamIds:Object.keys(vote.responses)};
+ return {voteId:vote.voteId,open:vote.open,optionCount:vote.optionCount,eligibleTeamIds:vote.eligibleTeamIds,kind:vote.kind,alreadyVotedTeamIds:Object.keys(vote.responses),currentChoices:{...vote.responses}};
 }
 function sendGame(){io.emit('game:state',game)}
 function progress(){
@@ -59,17 +59,35 @@ io.on('connection',socket=>{
    if(ack)ack({ok:true,voteId:vote.voteId});
  });
  socket.on('professor:closeVote',data=>{if(vote&&data&&data.voteId===vote.voteId)closeVote()});
+ socket.on('professor:cancelVote',data=>{
+   if(!vote)return;
+   if(data&&data.voteId&&data.voteId!==vote.voteId)return;
+   clearTimeout(voteTimer);
+   const id=vote.voteId;
+   vote=null;
+   io.emit('vote:closed',{voteId:id,cancelled:true});
+ });
  socket.on('student:hello',data=>{socket.data.teamId=data&&data.teamId||null;socket.emit('game:state',game);if(vote&&vote.open)socket.emit('vote:open',publicVote())});
- socket.on('student:join',data=>{socket.data.teamId=data&&data.teamId||null;io.emit('student:joined',{teamId:socket.data.teamId})});
+ socket.on('student:join',(data,ack)=>{
+   const requested=data&&data.teamId||null;
+   if(socket.data.teamId && socket.data.teamId!==requested){
+     return ack&&ack({ok:false,message:'Este aparelho já está vinculado a outra equipe nesta sessão.'});
+   }
+   socket.data.teamId=requested;
+   io.emit('student:joined',{teamId:socket.data.teamId});
+   ack&&ack({ok:true});
+ });
  socket.on('student:vote',(data,ack)=>{
    if(!vote||!vote.open)return ack&&ack({ok:false,message:'A votação já foi encerrada.'});
    const teamId=String(data.teamId||'');
    if(!vote.eligibleTeamIds.includes(teamId))return ack&&ack({ok:false,message:'Sua equipe não participa desta votação.'});
-   if(Object.prototype.hasOwnProperty.call(vote.responses,teamId))return ack&&ack({ok:false,message:'A equipe já respondeu.'});
    const choice=Number(data.choice);
    if(!Number.isInteger(choice)||choice<0||choice>=vote.optionCount)return ack&&ack({ok:false,message:'Alternativa inválida.'});
-   vote.responses[teamId]=choice; ack&&ack({ok:true}); progress();
-   if(Object.keys(vote.responses).length>=vote.eligibleTeamIds.length)setTimeout(closeVote,500);
+   vote.responses[teamId]=choice;
+   ack&&ack({ok:true,updated:true});
+   progress();
+   // Não fecha mais ao receber todas as respostas: mantém aberto até o tempo ou fechamento manual,
+   // permitindo que as equipes alterem sua escolha.
  });
 });
 

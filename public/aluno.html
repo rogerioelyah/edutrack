@@ -14,6 +14,10 @@ button{border:0;border-radius:16px;font-weight:1000;color:white}.join{width:100%
 </style></head><body><main>
 <div class="card"><div class="muted">EduTrack — controle da equipe</div><h1>📱 Resposta + placar</h1>
 <div id="joinPane"><select id="teamSelect"><option>Carregando equipes...</option></select><button class="join" id="joinBtn">ENTRAR COMO EQUIPE</button></div>
+<div id="lockedPane" style="display:none">
+  <div class="status ok" id="lockedTeam">Equipe vinculada</div>
+  <div class="muted" style="margin-top:6px">Este aparelho ficou vinculado a esta equipe durante a partida.</div>
+</div>
 <div id="who" class="status wait" style="margin-top:10px">Conectando...</div></div>
 
 <div class="card"><div class="muted">Votação</div><h1 id="voteTitle">Aguardando questão</h1>
@@ -30,7 +34,7 @@ button{border:0;border-radius:16px;font-weight:1000;color:white}.join{width:100%
 </main>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-const socket=io();let myTeamId=localStorage.getItem('edutrackTeamId')||null;let game=null;let vote=null;let voted=false;
+const socket=io();let myTeamId=localStorage.getItem('edutrackTeamId')||null;let game=null;let vote=null;let currentChoice=null;
 const $=id=>document.getElementById(id);
 function renderAnswers(n=4){
  const letters=['A','B','C','D','E'];
@@ -42,7 +46,11 @@ function renderGame(){
  if(!game)return;
  $('teamSelect').innerHTML=game.teams.filter(t=>!t.eliminated).map(t=>`<option value="${t.id}" ${t.id===myTeamId?'selected':''}>${t.name} • Pista ${t.lane}</option>`).join('');
  const me=game.teams.find(t=>t.id===myTeamId);
- if(me){$('who').textContent=`✅ ${me.name}`;$('who').className='status ok';$('myPts').textContent=me.points;$('myPos').textContent=me.pos;$('myLane').textContent=me.lane;
+ if(me){
+   $('joinPane').style.display='none';
+   $('lockedPane').style.display='block';
+   $('lockedTeam').textContent=`🔒 ${me.name} • Pista ${me.lane}`;
+   $('who').textContent=`✅ ${me.name}`;$('who').className='status ok';$('myPts').textContent=me.points;$('myPos').textContent=me.pos;$('myLane').textContent=me.lane;
  $('myStatus').textContent=me.eliminated?'🔴 Eliminada':me.blocked?'⛔ Bloqueada':me.immune?'🛡️ Imune':'🟢 Ativa';}
  $('scoreboard').innerHTML=[...game.teams].sort((a,b)=>b.points-a.points||b.pos-a.pos).map((t,i)=>`<tr class="${t.id===myTeamId?'me':''}"><td>${i+1}º</td><td><b>${t.name}</b></td><td>${t.points} pts</td><td>Casa ${t.pos}</td></tr>`).join('');
  applyVoteState();
@@ -50,22 +58,32 @@ function renderGame(){
 function applyVoteState(){
  const me=game&&game.teams.find(t=>t.id===myTeamId);
  const eligible=vote&&vote.eligibleTeamIds&&vote.eligibleTeamIds.includes(myTeamId);
- const open=vote&&vote.open&&eligible&&!voted&&me&&!me.blocked&&!me.eliminated;
- document.querySelectorAll('.ans').forEach(b=>b.disabled=!open);
+ const open=vote&&vote.open&&eligible&&me&&!me.blocked&&!me.eliminated;
+ document.querySelectorAll('.ans').forEach(b=>{
+   b.disabled=!open;
+   b.classList.toggle('sel',currentChoice!==null && Number(b.dataset.i)===currentChoice);
+ });
  if(vote&&vote.open){
    $('voteTitle').textContent='Escolha sua alternativa';
    if(!eligible)$('voteMsg').textContent=me&&me.blocked?'🔒 Equipe bloqueada — acompanha, mas não vota.':'Você acompanha esta questão, mas não participa.';
-   else if(voted)$('voteMsg').textContent='✅ Resposta registrada. Aguarde o encerramento.';
-   else $('voteMsg').textContent='Votação aberta. Apenas uma resposta é aceita.';
+   else if(currentChoice!==null)$('voteMsg').textContent='✅ Resposta registrada. Você pode trocar enquanto o tempo estiver aberto; vale a última escolha.';
+   else $('voteMsg').textContent='Votação aberta. Você pode alterar a resposta até o encerramento.';
  }else{$('voteTitle').textContent='Aguardando questão';$('voteMsg').textContent='Quando a questão abrir, os botões serão liberados.'}
 }
 function cast(i,btn){
- if(!vote||!vote.open||voted||!myTeamId)return;
- voted=true;document.querySelectorAll('.ans').forEach(b=>{b.disabled=true;b.classList.remove('sel')});btn.classList.add('sel');
- socket.emit('student:vote',{voteId:vote.voteId,teamId:myTeamId,choice:i},ack=>{
-   if(!ack||!ack.ok){voted=false;applyVoteState();$('voteMsg').textContent=ack&&ack.message?ack.message:'Não foi possível registrar.'}
- });
+ if(!vote||!vote.open||!myTeamId)return;
+ const previous=currentChoice;
+ currentChoice=i;
  applyVoteState();
+ socket.emit('student:vote',{voteId:vote.voteId,teamId:myTeamId,choice:i},ack=>{
+   if(!ack||!ack.ok){
+     currentChoice=previous;
+     applyVoteState();
+     $('voteMsg').textContent=ack&&ack.message?ack.message:'Não foi possível registrar.';
+   }else{
+     $('voteMsg').textContent='✅ Resposta salva. Você pode trocar enquanto o tempo estiver aberto; vale a última escolha.';
+   }
+ });
 }
 $('joinBtn').onclick=()=>{
  myTeamId=$('teamSelect').value;if(!myTeamId)return;
@@ -73,6 +91,6 @@ $('joinBtn').onclick=()=>{
 };
 socket.on('connect',()=>{socket.emit('student:hello',{teamId:myTeamId});$('who').textContent='Conectado. Escolha sua equipe.'});
 socket.on('game:state',g=>{game=g;renderGame()});
-socket.on('vote:open',v=>{vote=v;voted=!!(v.alreadyVotedTeamIds||[]).includes(myTeamId);renderAnswers(v.optionCount||4);applyVoteState()});
-socket.on('vote:closed',()=>{vote=null;voted=false;applyVoteState();document.querySelectorAll('.ans').forEach(b=>b.classList.remove('sel'))});
+socket.on('vote:open',v=>{vote=v;currentChoice=(v.currentChoices&&Object.prototype.hasOwnProperty.call(v.currentChoices,myTeamId))?Number(v.currentChoices[myTeamId]):null;renderAnswers(v.optionCount||4);applyVoteState()});
+socket.on('vote:closed',()=>{vote=null;currentChoice=null;applyVoteState();document.querySelectorAll('.ans').forEach(b=>b.classList.remove('sel'))});
 </script></body></html>

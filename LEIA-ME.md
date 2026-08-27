@@ -48,3 +48,20 @@ Após o fechamento e correção automática de uma votação, o painel do profes
 - A explicação da questão também aparece quando disponível.
 - O popup permanece por 6 segundos para leitura.
 - Depois dele, o pódio é exibido automaticamente.
+
+
+## v2.5 — recuperação e diagnóstico
+- O painel de QR Code pode ser fechado pelo botão × e reaberto por “QR / Votação”.
+- “Cancelar votação / destravar” encerra uma votação problemática sem corrigir respostas e libera os controles.
+- Erros JavaScript e falhas de Promise abrem automaticamente uma tela de diagnóstico.
+- O diagnóstico mostra versão, conexão Socket.IO, equipe/turno/casa, estado do dado, modal ativo e stack do erro.
+- Use “COPIAR DIAGNÓSTICO” e envie o texto para análise.
+
+
+## v2.6 — identidade fixa e voto editável
+- Após entrar como uma equipe, o seletor desaparece e o aparelho fica vinculado àquela equipe durante a partida.
+- O controle passa a mostrar a equipe vinculada em vez de oferecer troca.
+- Durante o tempo da questão, a equipe pode trocar A/B/C/D/E quantas vezes quiser.
+- Vale sempre a última alternativa enviada antes do encerramento.
+- A votação não fecha automaticamente quando todas as equipes respondem; permanece aberta até o cronômetro terminar ou o professor encerrar manualmente.
+- O botão selecionado permanece destacado no celular para indicar a resposta atual.
