@@ -1,0 +1,808 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EduTrack — Operação Manutenção v1.0</title>
+<style>
+:root{--bg:#07111f;--p:#0d1b2a;--p2:#10263d;--b:#24435e;--t:#eef6ff;--m:#9fb3c8;--a:#38bdf8;--g:#22c55e;--r:#fb7185;--y:#fbbf24}*{box-sizing:border-box}body{margin:0;background:linear-gradient(#050a12,#07111f 45%,#081728);color:var(--t);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}button,input{font:inherit}button{cursor:pointer}.hidden{display:none!important}.top{position:sticky;top:0;z-index:20;background:#07111ff2;border-bottom:1px solid #18344d;padding:12px 18px;display:flex;justify-content:space-between;align-items:center}.brand{font-weight:900}.brand small{display:block;color:var(--m);font-weight:500}.actions{display:flex;gap:7px}.btn{border:1px solid var(--b);background:#10263d;color:white;border-radius:9px;padding:9px 12px;font-weight:800}.btn:hover{filter:brightness(1.12)}.primary{background:#0284c7}.good{background:#166534}.bad{background:#9f1239}.warn{background:#a16207}.hero{min-height:calc(100vh - 65px);display:grid;place-items:center;padding:24px}.card{width:min(1050px,96vw);background:#0a1828;border:1px solid #1e3a53;border-radius:22px;padding:30px;box-shadow:0 25px 70px #0008}.k{color:#7dd3fc;text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:900}h1{font-size:42px;margin:8px 0}p{color:var(--m);line-height:1.5}.inputs{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}.inputs input{width:100%;padding:10px;border-radius:9px;border:1px solid #294a65;background:#07131f;color:white}.result{margin-top:16px;padding:14px;border:1px solid #1e3a53;border-radius:12px;display:grid;grid-template-columns:1fr 1fr;gap:18px}.result h3{color:#7dd3fc;margin:0 0 7px}.game{padding:16px;display:grid;grid-template-columns:310px 1fr;gap:12px}.side{background:#091827;border:1px solid #17344d;border-radius:14px;padding:12px;height:fit-content;position:sticky;top:78px}.turn{background:#0d2235;border:1px solid #27506d;border-radius:12px;padding:12px}.turn b{font-size:22px}.die{width:90px;height:90px;border-radius:16px;background:white;color:#0f172a;display:grid;place-items:center;font-size:50px;font-weight:1000;margin:10px 0}.note{font-size:12px;color:var(--m)}table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12px}th,td{border-bottom:1px solid #18344d;padding:7px 3px;text-align:left}th{color:#7dd3fc}.tag{display:inline-block;padding:2px 5px;border-radius:999px;background:#18344d;margin:1px}.board{background:#071522;border:1px solid #17344d;border-radius:14px;overflow:hidden}.boardHead{padding:11px 13px;border-bottom:1px solid #17344d}.legend{font-size:11px;color:var(--m);display:flex;gap:8px;flex-wrap:wrap;margin-top:5px}.scroll{overflow:auto;max-height:calc(100vh - 120px)}.track{min-width:3260px;display:grid;grid-template-columns:130px repeat(36,86px);grid-auto-rows:68px}.hc,.lab,.cell{border-right:1px solid #17344d;border-bottom:1px solid #17344d}.hc{position:sticky;top:0;z-index:8;background:#0b1d2d;display:grid;place-items:center;font-size:11px;font-weight:900}.lab{position:sticky;left:0;z-index:7;background:#0a1c2c;padding:8px;display:flex;flex-direction:column;justify-content:center}.lab small{color:var(--m)}.cell{position:relative;display:grid;place-items:center;background:#081522}.cell:hover{background:#10283b}.cell.active{outline:1px solid #38bdf855}.cell.suggest{box-shadow:inset 0 0 0 3px var(--y);background:#3b2b08}.cell.current{box-shadow:inset 0 0 0 3px var(--a)}.num{position:absolute;top:3px;left:5px;font-size:9px;color:#58758f}.ico{font-size:23px}.mystery{font-size:20px;color:#5e7891;font-weight:900}.revealedCell{background:#102b40!important;box-shadow:inset 0 0 0 2px #38bdf8}.preq{position:relative;overflow:hidden}.preq .q,.preq .opt{filter:blur(13px);opacity:.34;user-select:none;transition:filter .35s ease,opacity .35s ease}.preq.ready .q,.preq.ready .opt{filter:none;opacity:1}.prepOverlay{position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(4,10,18,.62);backdrop-filter:blur(2px);transition:opacity .3s ease}.prepOverlay.hide{opacity:0;pointer-events:none}.prepTitle{font-size:12px;color:#7dd3fc;font-weight:900;letter-spacing:.15em;text-transform:uppercase}.prepCount{font-size:64px;line-height:1;font-weight:1000;margin:8px 0}.prepHint{font-size:13px;color:#cbd5e1}.pawn{position:absolute;right:5px;bottom:4px;width:23px;height:23px;border-radius:50%;background:#7dd3fc;color:#001018;border:2px solid white;display:grid;place-items:center;font-size:10px;font-weight:1000}.modalBg{position:fixed;inset:0;background:#01050bd9;z-index:100;display:grid;place-items:center;padding:18px}.modal{width:min(1080px,96vw);max-height:94vh;overflow:auto;background:#071522;border:1px solid #31526c;border-radius:20px}.mh{padding:16px 20px;border-bottom:1px solid #18344d;display:flex;justify-content:space-between;align-items:center}.mb{padding:22px}.ey{color:#7dd3fc;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:900}.q{font-size:24px;line-height:1.35;font-weight:900;margin:14px 0}.opt{padding:13px 15px;border:1px solid #294a65;background:#0d2134;border-radius:10px;margin:8px 0;font-size:18px}.ans{padding:14px;border:1px solid #166534;background:#14532d33;border-radius:10px;margin-top:14px}.ans b{color:#86efac}.ma{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.timer{font-size:32px;font-weight:1000;min-width:80px;text-align:center}.judge{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:16px}.jr{padding:9px;border:1px solid #294a65;border-radius:10px;text-align:center;background:#0a1c2c}.jr .rb{display:flex;gap:5px;margin-top:7px}.jr button{flex:1;border:0;border-radius:7px;padding:8px;color:white}.ok{background:#166534}.no{background:#9f1239}.mkok{box-shadow:inset 0 0 0 2px var(--g)}.mkno{box-shadow:inset 0 0 0 2px var(--r)}.duel{display:grid;grid-template-columns:1fr 90px 1fr;align-items:center;gap:12px;margin:12px 0}.dt{padding:14px;border:1px solid #294a65;border-radius:13px;text-align:center;background:#0d2134}.dt .nm{font-size:20px;font-weight:900}.dt .sc{font-size:48px;font-weight:1000}.vs{text-align:center;color:var(--r);font-size:26px;font-weight:1000}.dj .selectedOk{box-shadow:0 0 0 3px #22c55e inset,0 0 18px #22c55e55}.dj .selectedNo{box-shadow:0 0 0 3px #fb7185 inset,0 0 18px #fb718555}.duelJudge{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.dj{border:1px solid #294a65;border-radius:12px;padding:12px}.toast{position:fixed;right:16px;bottom:16px;z-index:300;background:#10263d;border:1px solid #31526c;border-radius:10px;padding:11px 13px}@media(max-width:1000px){.inputs{grid-template-columns:1fr 1fr}.game{grid-template-columns:1fr}.side{position:static}.judge{grid-template-columns:repeat(2,1fr)}}
+
+/* v2.0 — destaque forte da pista ativa */
+.cell.activeLaneV2{
+  background:linear-gradient(90deg,rgba(14,165,233,.28),rgba(34,211,238,.16))!important;
+  box-shadow:inset 0 2px 0 rgba(125,211,252,.55),inset 0 -2px 0 rgba(125,211,252,.55);
+}
+.laneActiveV2{
+  background:linear-gradient(90deg,#075985,#0c4a6e)!important;
+  box-shadow:inset 5px 0 0 #67e8f9,0 0 24px rgba(34,211,238,.25);
+}
+.laneActiveV2 strong:after{
+  content:"  • AO VIVO";
+  color:#a5f3fc;font-size:10px;letter-spacing:.08em;
+}
+.cell,.lane-label{transition:background .45s ease,box-shadow .45s ease,opacity .45s ease}
+
+
+.errorPanel{position:fixed;inset:0;z-index:9999;background:rgba(2,6,12,.9);display:flex;align-items:center;justify-content:center;padding:24px}
+.errorCard{width:min(920px,95vw);background:#111827;border:1px solid #ef4444;border-radius:18px;padding:22px;box-shadow:0 25px 80px rgba(0,0,0,.6)}
+.errorCard h2{margin:0 0 8px;color:#fecaca}.errorCard p{color:#cbd5e1}.errorDiag{background:#020617;border:1px solid #334155;border-radius:12px;padding:14px;white-space:pre-wrap;word-break:break-word;color:#e2e8f0;font-family:ui-monospace,monospace;max-height:300px;overflow:auto}.errorActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+
+
+/* v2.3 — turno impossível de ignorar */
+.lab.currentLane{
+  background:linear-gradient(90deg,#0369a1,#164e63)!important;
+  box-shadow:inset 6px 0 0 #67e8f9,0 0 28px rgba(34,211,238,.4)!important;
+}
+.lab.currentLane b:after{
+  content:"  • JOGANDO";
+  color:#cffafe;font-size:10px;letter-spacing:.08em;
+}
+.cell.active{
+  background:linear-gradient(90deg,rgba(14,165,233,.34),rgba(8,145,178,.18))!important;
+  box-shadow:inset 0 2px 0 rgba(103,232,249,.55),inset 0 -2px 0 rgba(103,232,249,.55);
+}
+
+
+/* v2.4 — mantém o destaque forte da raia, mas restaura as casas ao visual anterior */
+.cell.active{
+  background:#0d2233!important;
+  box-shadow:none!important;
+}
+.cell.active.current{
+  background:#17384d!important;
+}
+.cell.active.suggest{
+  box-shadow:inset 0 0 0 2px #fbbf24!important;
+}
+.cell.active.revealedCell{
+  background:#102b40!important;
+  box-shadow:inset 0 0 0 2px #38bdf8!important;
+}
+
+
+/* v2.5 — questões coletivas padronizadas em três alternativas (A/B/C).
+   Duelos e demais provas especiais mantêm a quantidade própria de alternativas. */
+
+
+.blockedVote{opacity:.5;background:rgba(71,85,105,.22)!important;border-style:dashed!important}
+.blockedLabel{margin-top:8px;padding:8px;border-radius:8px;background:#1e293b;color:#cbd5e1;font-size:11px;font-weight:900;letter-spacing:.04em}
+
+
+/* v3.0 — quantidade dinâmica de equipes/pistas (2 a 10) */
+#teamCount{background:#102536;color:#e8f2f8;border:1px solid #27475d;border-radius:9px}
+.track{grid-auto-rows:minmax(42px,auto)}
+@media (max-height:900px){.cell{min-height:42px}.lab{min-height:42px}}
+
+</style></head><body>
+<header class="top"><div class="brand">EduTrack — Operação Manutenção <span style="color:#7dd3fc">v2.1 CONECTADO</span><small>Game Master • Manutenção e Melhoria de Software</small></div><div class="actions"><button class="btn" id="undo">↩ Desfazer</button><button class="btn" id="save">💾 Salvar</button><button class="btn" id="reset">↻ Reiniciar</button></div></header>
+<section id="setup" class="hero"><div class="card"><div class="k">Configuração</div><h1>Equipes variáveis. 1 vencedora.</h1><p>Defina quantas equipes estão presentes hoje. O sistema cria a mesma quantidade de pistas e sorteia <b>Equipe × Pista</b> e a <b>ordem dos turnos</b>.</p><div style="display:flex;align-items:center;gap:10px;margin:16px 0"><label for="teamCount"><b>Quantidade de equipes:</b></label><select id="teamCount" class="btn" style="min-width:90px"></select><button class="btn" id="applyCount">APLICAR</button></div><div class="inputs" id="inputs"></div><div class="ma"><button class="btn primary" id="draw">🎲 Sortear pistas e ordem</button><button class="btn good hidden" id="start">▶ Iniciar operação</button></div><div id="drawResult" class="result hidden"></div></div></section>
+<section id="game" class="game hidden"><aside class="side"><div class="turn"><div class="ey">Turno atual</div><b id="now">—</b><div id="status"></div><div class="die" id="die">🎲</div><button class="btn primary" style="width:100%" id="roll">ROLAR DADO</button><button class="btn good" style="width:100%;margin-top:7px" id="moveSuggested">✓ MOVER PARA CASA SUGERIDA</button><div class="note" id="diceNote">A equipe destacada joga agora. Role o dado e clique manualmente na casa — ou use o botão verde para confirmar a casa sugerida.</div><div class="ma"><button class="btn" id="next">➡ Próxima (manual)</button><button class="btn" id="consume">⛔ CONSUMIR BLOQUEIO / PERDER TURNO</button></div></div><table><thead><tr><th>Equipe</th><th>P</th><th>C</th><th>Pts</th><th>Status</th></tr></thead><tbody id="scores"></tbody></table></aside><main class="board"><div class="boardHead"><b>Mapa da Manutenção</b><div class="legend">🚨 Desafio · 🎁 Vantagem · 💀 Revés · 🔥 Incidente · ⚡ Rápida · ☎️ Diretoria · 🔄 Reorganização · ☠️ Crítico · 🏆 Final</div></div><div class="scroll"><div class="track" id="track"></div></div></main></section>
+<div id="modal"></div><div id="toast" class="toast hidden"></div>
+<script>
+const I={challenge:'🚨',adv:'🎁',set:'💀',n1:'🔥',n2:'🔥',quick:'⚡',board:'☎️',reorg:'🔄',crit:'☠️',final:'🏆'};
+const T={1:'challenge',2:'adv',3:'challenge',4:'n1',5:'set',6:'adv',7:'challenge',8:'quick',9:'adv',10:'n1',11:'set',12:'challenge',13:'challenge',14:'adv',15:'set',16:'n2',17:'challenge',18:'reorg',19:'adv',20:'board',21:'challenge',22:'set',23:'n2',24:'quick',25:'challenge',26:'set',27:'adv',28:'reorg',29:'challenge',30:'board',31:'set',32:'challenge',33:'quick',34:'crit',35:'challenge',36:'final'};
+const themes={1:'Utilidade × Garantia',3:'Pessoas, Processos e Tecnologia',7:'Gerenciamento de Serviços',8:'Utilidade do serviço',12:'Valor do serviço',13:'Habilidades × Recursos',17:'Habilidades × Recursos',20:'Valor e capacidade organizacional',21:'Outsourcing × Outtasking',24:'Outtasking',25:'Função × Processo × Papel',29:'Melhoria contínua',30:'Proprietário do Serviço',32:'Proprietário do Processo',33:'Utilidade × Garantia',35:'Síntese do valor'};
+function q(text,opts,correct,why){return{text,opts,correct,why}}
+const Q={
+1:[q('O sistema tem todas as funcionalidades, mas fica indisponível várias vezes ao dia. O que está comprometido?',['A) Utilidade','B) Garantia','C) Nenhuma das alternativas'],1,'Disponibilidade pertence à garantia.'),q('O aplicativo atende ao negócio, mas fica muito lento no pico. O problema está em:',['A) Utilidade','B) Garantia','C) Nenhuma das alternativas'],1,'Desempenho e capacidade fazem parte da garantia.'),q('O serviço é estável, mas não executa a função que o negócio precisa. Falta:',['A) Utilidade','B) Garantia','C) Nenhuma das alternativas'],0,'Utilidade é estar apto ao propósito.'),q('A plataforma funciona, mas não suporta o volume contratado. O problema é:',['A) Utilidade','B) Garantia','C) Nenhuma das alternativas'],1,'Capacidade está ligada à garantia.'),q('O sistema está sempre disponível, mas não entrega a saída necessária. Falta:',['A) Utilidade','B) Garantia','C) Nenhuma das alternativas'],0,'O propósito não é atendido.'),q('A função está correta, mas a disponibilidade acordada não é atingida. Falta:',['A) Utilidade','B) Garantia','C) Nenhuma das alternativas'],1,'Disponibilidade integra garantia.'),q('Quando está no ar, o serviço funciona; porém as interrupções são frequentes. Falta:',['A) Utilidade','B) Garantia','C) Nenhuma das alternativas'],1,'O problema é de garantia.')],
+3:[q('Qual elemento tem tanta importância quanto tecnologia na execução e gestão do serviço?',['A) Pessoas','B) Hardware','C) Capital'],0,'TI não é somente tecnologia.'),q('Atividades são agrupadas em processos para facilitar:',['A) Controle e gerenciamento','B) Compra de hardware','C) Terceirização'],0,'Processos organizam atividades.'),q('Quem usa tecnologia para executar atividades?',['A) Pessoas','B) Somente fornecedores','C) Somente diretores'],0,'Pessoas executam atividades usando tecnologia.'),q('Qual combinação representa a base do gerenciamento de serviços?',['A) Pessoas + Processos + Tecnologia','B) Hardware + Software + Orçamento','C) Cliente + Fornecedor + Contrato'],0,'É a tríade apresentada no material.'),q('Responsabilidades, capacidade e disciplina se relacionam principalmente a:',['A) Pessoas','B) Hardware','C) Capital'],0,'São aspectos ligados às pessoas.'),q('Definição, desenho, conformidade e aperfeiçoamento se relacionam a:',['A) Processos','B) Equipamentos','C) Orçamento'],0,'São aspectos dos processos.'),q('Ferramentas e hardware pertencem principalmente a:',['A) Tecnologia','B) Pessoas','C) Papel'],0,'Tecnologia inclui ferramentas e hardware.')],
+7:[q('Gerenciamento de Serviços busca:',['A) Entregar e suportar serviços alinhados ao negócio','B) Administrar somente equipamentos','C) Eliminar fornecedores'],0,'O foco é o serviço e as necessidades do cliente.'),q('A missão da TI orientada a serviços é:',['A) Prover serviços ao cliente','B) Desenvolver tecnologia por si só','C) Apenas reduzir custos'],0,'A TI passa a ser provedora de serviços.'),q('O foco do gerenciamento de serviços deve estar:',['A) Nas necessidades dos clientes','B) Apenas nas ferramentas','C) Apenas no organograma'],0,'Serviços são orientados ao cliente.'),q('Um bom gerenciamento de serviços busca:',['A) Alinhamento com a estratégia do negócio','B) Máximo número de sistemas','C) Menor número de processos'],0,'Alinhamento é parte da definição.'),q('A tecnologia no serviço serve para:',['A) Apoiar e automatizar atividades','B) Substituir todas as pessoas','C) Eliminar processos'],0,'Tecnologia apoia a provisão do serviço.'),q('Qual NÃO representa a visão de serviços?',['A) TI provedora de serviços','B) Integração de pessoas, processos e tecnologia','C) TI isolada focada só em ferramentas'],2,'A visão exige integração.'),q('Gerenciamento de serviços viabiliza:',['A) Entrega e suporte de serviços','B) Apenas compra de equipamentos','C) Somente terceirização'],0,'Entrega e suporte são centrais.')],
+8:[q('O serviço funciona tecnicamente, mas não resolve a necessidade para a qual foi contratado. Falta:',['A) Utilidade','B) Garantia','C) Nenhuma das alternativas'],0,'Utilidade é aptidão ao propósito.'),q('O serviço executa a função errada com excelente disponibilidade. Falta:',['A) Utilidade','B) Garantia','C) Nenhuma das alternativas'],0,'Disponibilidade não compensa função errada.'),q('O cliente precisava automatizar pedidos, mas o serviço apenas gera relatórios. Falta:',['A) Utilidade','B) Garantia','C) Nenhuma das alternativas'],0,'Não atende ao propósito.'),q('O serviço é estável, mas sua saída não é usada pelo negócio. Falta:',['A) Utilidade','B) Garantia','C) Nenhuma das alternativas'],0,'O que o serviço faz não atende à necessidade.'),q('"O que o serviço faz?" está ligado a:',['A) Utilidade','B) Garantia','C) Nenhuma das alternativas'],0,'Definição do material.'),q('Requisitos funcionais se ligam mais a:',['A) Utilidade','B) Garantia','C) Nenhuma das alternativas'],0,'O material associa requisitos funcionais à utilidade.'),q('Características, entradas e saídas se ligam mais a:',['A) Utilidade','B) Garantia','C) Nenhuma das alternativas'],0,'São elementos da utilidade.')],
+12:[q('Para criar valor em um serviço de TI, é preciso unir:',['A) Utilidade + Garantia','B) Hardware + Software','C) Projeto + Operação'],0,'As duas perspectivas formam valor.'),q('Utilidade alta e garantia baixa fazem o valor:',['A) Ficar comprometido','B) Ficar automaticamente alto','C) Independer da garantia'],0,'As duas perspectivas importam.'),q('Qual combinação representa melhor valor?',['A) Apto ao propósito + apto ao uso','B) Barato + moderno','C) Interno + terceirizado'],0,'Síntese do material.'),q('Um serviço útil mas instável entrega valor completo?',['A) Não','B) Sim','C) Nenhuma das alternativas'],0,'A garantia é insuficiente.'),q('Um serviço estável sem função relevante entrega valor completo?',['A) Não','B) Sim','C) Nenhuma das alternativas'],0,'A utilidade é insuficiente.'),q('"Como o serviço faz isto bem?" corresponde a:',['A) Garantia','B) Utilidade','C) Nenhuma das alternativas'],0,'Definição do material.'),q('"O que o serviço faz?" corresponde a:',['A) Utilidade','B) Garantia','C) Nenhuma das alternativas'],0,'Definição do material.')],
+13:[q('Qual é uma HABILIDADE?',['A) Gerenciamento','B) Infraestrutura','C) Aplicações'],0,'Gerenciamento é habilidade.'),q('Qual é um RECURSO?',['A) Infraestrutura','B) Organização','C) Conhecimento'],0,'Infraestrutura é recurso.'),q('Conhecimento é:',['A) Habilidade','B) Recurso financeiro','C) Aplicação'],0,'Conhecimento aparece como habilidade.'),q('Aplicações são:',['A) Recursos','B) Habilidades','C) Processos'],0,'Aplicações aparecem como recursos.'),q('Organização é:',['A) Habilidade','B) Recurso','C) Hardware'],0,'Organização aparece como habilidade.'),q('Capital financeiro é:',['A) Recurso','B) Habilidade','C) Papel'],0,'Capital financeiro é recurso.'),q('Processos são:',['A) Habilidade','B) Recurso','C) Aplicação'],0,'Processos aparecem como habilidades.')],
+17:[q('Qual recurso aparece no material?',['A) Informação','B) Gerenciamento','C) Organização'],0,'Informação é recurso.'),q('Qual habilidade coordena recursos para gerar valor?',['A) Gerenciamento','B) Capital financeiro','C) Aplicação'],0,'Gerenciamento é habilidade.'),q('Recursos suficientes e habilidades ruins tendem a produzir:',['A) Serviço potencialmente pobre','B) Valor garantido','C) Nenhum risco'],0,'Recursos não bastam.'),q('Qual par contém apenas recursos?',['A) Infraestrutura e aplicações','B) Gerenciamento e conhecimento','C) Organização e processos'],0,'Ambos são recursos.'),q('Qual par contém apenas habilidades?',['A) Conhecimento e processos','B) Infraestrutura e capital','C) Aplicações e informação'],0,'Ambos são habilidades.'),q('Pessoas aparecem como:',['A) Habilidade e recurso','B) Apenas recurso','C) Apenas habilidade'],0,'Pessoas aparecem nas duas colunas.'),q('Ativos de serviço contribuem para:',['A) Criar valor','B) Eliminar processos','C) Substituir clientes'],0,'Ativos são usados para criar valor.')],
+20:[q('Temos boas máquinas e aplicações. Por que o serviço ainda pode ser ruim?',['A) Recursos precisam ser coordenados por habilidades','B) Tecnologia garante valor sozinha','C) Cliente não importa'],0,'Recursos precisam de habilidades.'),q('Muitos recursos e pouca capacidade de gerenciamento podem:',['A) Gerar serviço pobre','B) Garantir valor','C) Eliminar riscos'],0,'O material alerta para esse desequilíbrio.'),q('O valor depende apenas de recursos?',['A) Não','B) Sim','C) Nenhuma das alternativas'],0,'Habilidades também são necessárias.'),q('Qual afirmação está correta?',['A) Habilidades coordenam recursos','B) Recursos substituem habilidades','C) Processos são dispensáveis'],0,'Habilidades transformam/coordenam recursos.'),q('Se a organização não gerencia bem seus recursos, o provedor interno pode:',['A) Virar uma opção substituível','B) Tornar-se indispensável automaticamente','C) Eliminar concorrentes'],0,'O material alerta para substituição por concorrente.'),q('Por que tecnologia sozinha não basta?',['A) Pessoas e processos também fazem parte do serviço','B) Hardware resolve tudo','C) Software elimina gestão'],0,'Serviço integra os três elementos.'),q('Boa capacidade organizacional significa:',['A) Coordenar recursos para produzir valor','B) Comprar mais equipamentos','C) Reduzir todos os processos'],0,'Esse é o papel das habilidades.')],
+21:[q('Transferir tarefas para uma empresa terceira, com controle pelo terceiro, é:',['A) Outsourcing','B) Outtasking','C) Melhoria contínua'],0,'Definição apresentada no material.'),q('Terceirizar uma tarefa específica é:',['A) Outtasking','B) Outsourcing','C) Função'],0,'Outtasking é focado em tarefa específica.'),q('A estratégia de contratação deve avaliar:',['A) O que pode ser passado a terceiros','B) Apenas quantidade de PCs','C) Apenas nome do fornecedor'],0,'É o ponto levantado no material.'),q('Qual conceito envolve transferência para uma empresa terceira?',['A) Outsourcing','B) Utilidade','C) Papel'],0,'Outsourcing.'),q('Qual conceito é mais restrito a tarefas específicas?',['A) Outtasking','B) Outsourcing','C) Garantia'],0,'Outtasking.'),q('Terceirização aparece como parte de:',['A) Estratégia de contratação','B) Utilidade do serviço','C) Requisito funcional'],0,'Esse é o contexto do material.'),q('Terceirizar uma rotina isolada se aproxima de:',['A) Outtasking','B) Outsourcing integral','C) Proprietário do serviço'],0,'Tarefa específica = outtasking.')],
+24:[q('Terceirizar só o monitoramento noturno se aproxima de:',['A) Outtasking','B) Outsourcing integral','C) Nenhuma das alternativas'],0,'É tarefa específica.'),q('Terceirizar apenas o atendimento de primeiro nível se aproxima de:',['A) Outtasking','B) Outsourcing integral','C) Nenhuma das alternativas'],0,'É tarefa específica.'),q('Passar só a execução de backups a terceiro é:',['A) Outtasking','B) Outsourcing integral','C) Nenhuma das alternativas'],0,'É tarefa específica.'),q('Uma rotina repetitiva isolada é passada a terceiro. Isso é:',['A) Outtasking','B) Melhoria contínua','C) Nenhuma das alternativas'],0,'É tarefa específica.'),q('A empresa mantém comando geral e passa uma atividade isolada a terceiro. Isso é:',['A) Outtasking','B) Outsourcing integral','C) Nenhuma das alternativas'],0,'É terceirização focalizada.'),q('Terceirizar tarefa específica chama-se:',['A) Outtasking','B) Outsourcing','C) Nenhuma das alternativas'],0,'Conforme o material.'),q('Qual opção indica menor escopo de terceirização?',['A) Outtasking','B) Outsourcing integral','C) Nenhuma das alternativas'],0,'Outtasking é mais focalizado.')],
+25:[q('Time ou grupo de pessoas e ferramentas é:',['A) Função','B) Processo','C) Papel'],0,'Definição de função.'),q('Conjunto de atividades inter-relacionadas é:',['A) Processo','B) Papel','C) Função'],0,'Definição de processo.'),q('Conjunto de responsabilidades, atividades e autoridades é:',['A) Papel','B) Processo','C) Recurso'],0,'Definição de papel.'),q('Service Desk é principalmente:',['A) Função','B) Processo','C) Recurso'],0,'Exemplo apresentado no material.'),q('Gerenciamento de Incidentes é:',['A) Processo','B) Função','C) Cargo'],0,'Exemplo apresentado no material.'),q('Uma pessoa pode ter vários:',['A) Papéis','B) Cargos obrigatoriamente','C) Servidores'],0,'Papel não é cargo.'),q('Qual afirmação está correta?',['A) Papel não é necessariamente cargo','B) Papel e cargo são sempre iguais','C) Processo é uma pessoa'],0,'O material é explícito.')],
+29:[q('O gerenciamento de serviços deve ser:',['A) Melhorado continuamente','B) Congelado após implantação','C) Revisto só em auditoria'],0,'Melhoria contínua é indicada no material.'),q('Melhoria contínua significa:',['A) Aperfeiçoar o serviço ao longo do tempo','B) Encerrar quando entra em produção','C) Mudar só se trocar fornecedor'],0,'O processo deve ser aperfeiçoado.'),q('Qual postura está alinhada ao material?',['A) Medir e aperfeiçoar','B) Implantar e nunca revisar','C) Evitar mudanças'],0,'Melhoria contínua pressupõe revisão.'),q('Depois de estabilizar um serviço, deve-se:',['A) Continuar buscando melhorias','B) Parar de medir','C) Eliminar processos'],0,'Estabilidade não encerra a melhoria.'),q('Melhoria contínua se relaciona a:',['A) Aperfeiçoar gerenciamento de serviços','B) Apenas comprar hardware','C) Reduzir clientes'],0,'É um processo de aperfeiçoamento.'),q('Gerenciamento de serviços é melhor entendido como:',['A) Sujeito a melhoria contínua','B) Ação única','C) Compra isolada'],0,'Conforme o material.'),q('Qual contradiz o material?',['A) Melhorar continuamente','B) Medir e aperfeiçoar','C) Considerar o processo encerrado para sempre'],2,'O processo deve continuar evoluindo.')],
+30:[q('Quem faz contato primário com o cliente de um serviço?',['A) Proprietário do Serviço','B) Proprietário do Processo','C) Qualquer usuário'],0,'Atribuição do proprietário do serviço.'),q('Quem garante que entrega e suporte atendam aos requisitos?',['A) Proprietário do Serviço','B) Proprietário do Processo','C) Fornecedor obrigatoriamente'],0,'Atribuição do proprietário do serviço.'),q('Quem identifica oportunidades de melhoria do serviço?',['A) Proprietário do Serviço','B) Somente cliente','C) Apenas suporte'],0,'Atribuição da tabela.'),q('Quem presta contas ao diretor de TI sobre o serviço?',['A) Proprietário do Serviço','B) Proprietário do Processo','C) Qualquer desenvolvedor'],0,'Atribuição da tabela.'),q('Quem faz contato com proprietários de processo em relação ao serviço?',['A) Proprietário do Serviço','B) Cliente','C) Usuário final'],0,'Atribuição da tabela.'),q('Qual papel tem foco direto no cliente de um serviço?',['A) Proprietário do Serviço','B) Proprietário do Processo','C) Ferramenta'],0,'É o principal contato.'),q('O proprietário do serviço responde por:',['A) Iniciação, transição, manutenção e suporte','B) Apenas orçamento','C) Apenas hardware'],0,'Definição do material.')],
+32:[q('Quem garante execução do processo conforme documentado?',['A) Proprietário do Processo','B) Proprietário do Serviço','C) Cliente'],0,'Responsabilidade central do proprietário do processo.'),q('Quem define estratégia, políticas e padrões do processo?',['A) Proprietário do Processo','B) Usuário final','C) Hardware'],0,'Atribuição do material.'),q('Quem faz revisões periódicas do processo?',['A) Proprietário do Processo','B) Proprietário do Serviço','C) Cliente'],0,'Atribuição do material.'),q('Quem realiza treinamentos ligados ao processo?',['A) Proprietário do Processo','B) Apenas fornecedor','C) Cliente'],0,'Atribuição da tabela.'),q('Quem aperfeiçoa o processo?',['A) Proprietário do Processo','B) Proprietário do Serviço','C) Usuário'],0,'Atribuição da tabela.'),q('Quem assiste no desenho do processo?',['A) Proprietário do Processo','B) Cliente externo','C) Capital financeiro'],0,'Atribuição da tabela.'),q('O foco do proprietário do processo é:',['A) Execução adequada do processo','B) Ser o único contato do cliente','C) Comprar tecnologia'],0,'Ele responde pela execução do processo.')],
+33:[q('Função correta, mas capacidade e disponibilidade insuficientes significa:',['A) Utilidade presente e garantia insuficiente','B) Garantia presente e utilidade insuficiente','C) Nenhuma'],0,'Função atende; condições de uso não.'),q('Serviço estável e disponível, mas sem função necessária significa:',['A) Garantia presente e utilidade insuficiente','B) Utilidade presente e garantia insuficiente','C) Nenhuma das alternativas'],0,'Condições de uso existem; propósito não.'),q('Apto ao propósito, mas não apto ao uso significa:',['A) Utilidade presente e garantia insuficiente','B) Garantia presente e utilidade insuficiente','C) Nenhuma das alternativas'],0,'Relação conceitual.'),q('Apto ao uso, mas não ao propósito significa:',['A) Garantia presente e utilidade insuficiente','B) Utilidade presente e garantia insuficiente','C) Nenhuma das alternativas'],0,'Relação conceitual.'),q('Disponível 99,9%, mas sem função útil ao negócio:',['A) Garantia sem utilidade adequada','B) Utilidade sem garantia','C) Nenhuma das alternativas'],0,'Disponibilidade é garantia.'),q('Funcionalmente correto, mas lento e indisponível:',['A) Utilidade com garantia insuficiente','B) Garantia com utilidade insuficiente','C) Nenhuma das alternativas'],0,'Desempenho/ disponibilidade falham.'),q('Qual cenário indica problema de garantia?',['A) Função correta com baixa disponibilidade','B) Função errada com alta disponibilidade','C) Nenhuma das alternativas'],0,'Garantia envolve disponibilidade.')],
+35:[q('Qual síntese representa serviço de valor?',['A) Cumpre sua finalidade e tem condições adequadas de uso','B) Usa sempre a tecnologia mais nova','C) Tem sempre menor custo'],0,'Utilidade + garantia.'),q('Um serviço de valor deve ser:',['A) Apto ao propósito e ao uso','B) Apenas barato','C) Apenas moderno'],0,'Síntese do conceito.'),q('Qual representa melhor a visão de serviços?',['A) Atender necessidades com utilidade e garantia','B) Acumular ferramentas','C) Eliminar processos'],0,'Foco no cliente e valor.'),q('Tecnologia excelente sem atender ao cliente significa:',['A) Valor comprometido','B) Valor garantido','C) Nenhum efeito'],0,'Falta utilidade.'),q('Função correta sem disponibilidade suficiente significa:',['A) Valor comprometido','B) Valor completo','C) Utilidade inexistente'],0,'Falta garantia.'),q('O papel do gerenciamento de serviços é:',['A) Integrar pessoas, processos e tecnologia para entregar valor','B) Administrar só hardware','C) Terceirizar tudo'],0,'Síntese da aula.'),q('Para o cliente, o valor depende de:',['A) Atender à necessidade e funcionar adequadamente','B) Número de servidores','C) Número de ferramentas'],0,'Utilidade e garantia.')]
+};
+const ADV=[['MONITORAMENTO ATIVO','+1 ponto.'],['BASE DE CONHECIMENTO','Anule um futuro bloqueio de turno.'],['CROSS-TRAINING','Proteção contra 1 participante indisponível.'],['SLA ESTENDIDO','Peça +15 segundos em uma futura questão.'],['🛡️ ESCUDO','Anule uma penalidade de voltar casas.'],['IMUNIDADE','Não pode ser convocada como adversária na próxima Sala.'],['CAPACIDADE EXTRA','Avance manualmente +1 casa.']];
+const SET=[['SHADOW IT DESCOBERTA','-1 ponto.'],['ESPECIALISTA INDISPONÍVEL','1 participante não colabora na próxima prova.'],['CAPACIDADE NO LIMITE','Volte manualmente 2 casas.'],['CONHECIMENTO NO FORNECEDOR','-1 ponto e 1 participante indisponível.'],['PROCESSO SEM RESPONSÁVEL','-2 pontos.'],['MÉTRICA SEM VALOR','-1 ponto.'],['OPERAÇÃO BLOQUEADA','1 turno sem lançar o dado.']];
+const REORG=[['MUDANÇA DE PRIORIDADE','Última colocada avança 1 casa.'],['AUDITORIA INTERNA','Líder e última colocada trocam posições.'],['REALOCAÇÃO','Equipe da vez recebe +1 ponto.'],['REVISÃO DE PORTFÓLIO','Todos os bloqueios são removidos.'],['MUDANÇA DE ESTRUTURA','Troque posição com a equipe imediatamente à frente.'],['CONTINGÊNCIA','Equipes com 0 ponto recebem +1.'],['NOVA DIRETRIZ','Equipe da vez ganha imunidade.']];
+const DUEL={base:[q('Qual combinação representa a base do gerenciamento de serviços?',['A) Pessoas + Processos + Tecnologia','B) Hardware + Capital + Fornecedor'],0),q('TI é somente tecnologia?',['A) Sim','B) Não'],1),q('Atividades são agrupadas em processos para facilitar:',['A) Controle e gerenciamento','B) Compra de hardware'],0),q('Ferramentas e hardware pertencem a:',['A) Tecnologia','B) Papel'],0),q('Responsabilidades e disciplina se ligam a:',['A) Pessoas','B) Capital'],0),q('Processos ajudam a:',['A) Organizar atividades','B) Eliminar clientes'],0),q('Tecnologia pode:',['A) Automatizar atividades','B) Substituir toda gestão'],0),q('Quem usa tecnologia para executar atividades?',['A) Pessoas','B) Orçamento'],0),q('Serviço integra:',['A) Pessoas, processos e tecnologia','B) Somente software'],0),q('TI orientada a serviços deve:',['A) Prover serviços ao cliente','B) Isolar-se do negócio'],0),q('Melhoria deve ser:',['A) Contínua','B) Apenas inicial'],0),q('Foco do serviço:',['A) Necessidades do cliente','B) Ferramenta'],0)],assets:[q('Gerenciamento é:',['A) Habilidade','B) Recurso'],0),q('Infraestrutura é:',['A) Recurso','B) Habilidade'],0),q('Conhecimento é:',['A) Habilidade','B) Aplicação'],0),q('Aplicações são:',['A) Recursos','B) Habilidades'],0),q('Capital financeiro é:',['A) Recurso','B) Papel'],0),q('Organização é:',['A) Habilidade','B) Recurso'],0),q('Pessoas aparecem como:',['A) Habilidade e recurso','B) Apenas recurso'],0),q('Recursos sem habilidades podem gerar:',['A) Serviço pobre','B) Valor garantido'],0),q('Habilidades servem para:',['A) Coordenar recursos','B) Substituir clientes'],0),q('Informações são:',['A) Recurso','B) Habilidade'],0),q('Processos são:',['A) Habilidade','B) Recurso'],0),q('Ativos contribuem para:',['A) Criar valor','B) Eliminar processos'],0)],supplier:[q('Terceirizar tarefa específica é:',['A) Outtasking','B) Outsourcing'],0),q('Transferir tarefas para empresa terceira é:',['A) Outsourcing','B) Outtasking'],0),q('Estratégia de contratação avalia:',['A) O que pode ir a terceiros','B) Apenas PCs'],0),q('Só monitoramento noturno terceirizado é:',['A) Outtasking','B) Outsourcing integral'],0),q('Passar execução ampla para terceiro é:',['A) Outsourcing','B) Utilidade'],0),q('Tarefa específica =',['A) Outtasking','B) Garantia'],0),q('Fornecedor elimina gestão interna?',['A) Não','B) Sim'],0),q('Só backup terceirizado é:',['A) Outtasking','B) Outsourcing integral'],0),q('Outsourcing é:',['A) Transferência a terceiro','B) Melhoria contínua'],0),q('Outtasking é:',['A) Tarefa específica','B) Serviço inteiro'],0),q('Terceirização é parte de:',['A) Estratégia de contratação','B) Utilidade'],0),q('Provedor interno mal gerenciado pode:',['A) Ser substituído','B) Ser indispensável automaticamente'],0)],roles:[q('Service Desk é:',['A) Função','B) Processo','C) Papel'],0),q('Gerenciamento de Incidentes é:',['A) Processo','B) Função','C) Cargo'],0),q('Responsabilidades e autoridades formam:',['A) Papel','B) Processo','C) Função'],0),q('Time de pessoas e ferramentas é:',['A) Função','B) Papel','C) Recurso'],0),q('Atividades inter-relacionadas formam:',['A) Processo','B) Função','C) Cargo'],0),q('Uma pessoa pode ter vários:',['A) Papéis','B) Cargos obrigatórios','C) Servidores'],0),q('Papel é sempre cargo?',['A) Sim','B) Não'],1),q('Quem responde pelo processo?',['A) Proprietário do Processo','B) Proprietário do Serviço'],0),q('Quem é contato primário do cliente?',['A) Proprietário do Serviço','B) Proprietário do Processo'],0),q('Quem aperfeiçoa o processo?',['A) Proprietário do Processo','B) Cliente'],0),q('Quem melhora o serviço?',['A) Proprietário do Serviço','B) Hardware'],0),q('Função envolve:',['A) Pessoas e ferramentas','B) Só procedimentos'],0)]};
+const FINAL=[q('Valor exige:',['A) Utilidade + Garantia','B) Hardware + Software','C) Orçamento + Fornecedor'],0),q('Apto ao propósito =',['A) Utilidade','B) Garantia','C) Processo'],0),q('Apto ao uso =',['A) Garantia','B) Utilidade','C) Função'],0),q('Gerenciamento é:',['A) Habilidade','B) Recurso','C) Aplicação'],0),q('Infraestrutura é:',['A) Recurso','B) Habilidade','C) Papel'],0),q('Service Desk é:',['A) Função','B) Processo','C) Papel'],0),q('Gerenciamento de Incidentes é:',['A) Processo','B) Cargo','C) Recurso'],0),q('Responsabilidades definidas =',['A) Papel','B) Função','C) Hardware'],0),q('Quem responde pelo processo?',['A) Proprietário do Processo','B) Proprietário do Serviço','C) Cliente'],0),q('Quem é contato primário do cliente?',['A) Proprietário do Serviço','B) Proprietário do Processo','C) Fornecedor'],0),q('Tarefa específica terceirizada =',['A) Outtasking','B) Outsourcing integral','C) Garantia'],0),q('Gerenciamento deve ser:',['A) Melhorado continuamente','B) Congelado','C) Revisto só em auditoria'],0)];
+
+const DUEL4=[
+ q('Um serviço executa exatamente a função esperada, mas falha nos horários de maior demanda. Qual diagnóstico é mais adequado?',
+   ['A) Utilidade insuficiente','B) Garantia insuficiente por capacidade','C) Falha de papel','D) Falha de outtasking'],1,'A função atende ao propósito; capacidade pertence à garantia.'),
+ q('A ConectaSul possui infraestrutura e aplicações suficientes, mas não consegue coordená-las para entregar um serviço consistente. O principal déficit está em:',
+   ['A) Recursos','B) Habilidades','C) Utilidade funcional','D) Capital financeiro'],1,'Gerenciamento, organização, conhecimento e processos são habilidades que coordenam recursos.'),
+ q('Uma empresa terceiriza somente a monitoração noturna e mantém a gestão do serviço internamente. O arranjo se aproxima mais de:',
+   ['A) Outsourcing integral','B) Outtasking','C) Função interna','D) Garantia'],1,'Outtasking envolve terceirização de tarefas específicas.'),
+ q('Quem deve garantir que um processo seja executado conforme documentado e acordado?',
+   ['A) Proprietário do Serviço','B) Proprietário do Processo','C) Service Desk','D) Cliente'],1,'Essa responsabilidade pertence ao Proprietário do Processo.'),
+ q('Qual situação descreve melhor uma FUNÇÃO no gerenciamento de serviços?',
+   ['A) Sequência de atividades para restaurar um serviço','B) Conjunto de responsabilidades atribuído a uma pessoa','C) Grupo de pessoas e ferramentas organizado para executar atividades','D) Critério de disponibilidade'],2,'Função é um time ou grupo de pessoas e ferramentas usado para realizar atividades.'),
+ q('O sistema está disponível 99,99% do tempo e responde rapidamente, mas não atende à necessidade de negócio. O problema central é:',
+   ['A) Garantia','B) Utilidade','C) Capacidade','D) Disponibilidade'],1,'As condições de uso são boas, mas o serviço não está apto ao propósito.'),
+ q('Qual alternativa contém somente HABILIDADES de um provedor de serviços?',
+   ['A) Gerenciamento, conhecimento e processos','B) Infraestrutura, aplicações e capital','C) Informação, infraestrutura e organização','D) Capital, pessoas e aplicações'],0,'Gerenciamento, conhecimento e processos aparecem como habilidades.'),
+ q('Qual alternativa contém somente RECURSOS?',
+   ['A) Gerenciamento, organização e processos','B) Infraestrutura, aplicações e informação','C) Conhecimento, processos e capital','D) Organização, aplicações e gerenciamento'],1,'Infraestrutura, aplicações e informação são recursos.'),
+ q('O proprietário de um serviço percebe que o cliente está insatisfeito e identifica uma oportunidade de melhoria. Essa atuação é coerente porque ele:',
+   ['A) É o contato primário do cliente e acompanha o serviço','B) Executa obrigatoriamente todas as atividades do processo','C) Substitui o proprietário do processo','D) É responsável apenas por hardware'],0,'O Proprietário do Serviço atua como contato primário e identifica oportunidades de melhoria.'),
+ q('Qual cenário demonstra melhor a necessidade de Pessoas + Processos + Tecnologia?',
+   ['A) Comprar ferramenta nova sem definir responsáveis','B) Automatizar um processo definido, com pessoas responsáveis e tecnologia de apoio','C) Eliminar processos após automatização','D) Transferir toda decisão ao fornecedor'],1,'O gerenciamento de serviços integra os três componentes.'),
+ q('Uma pessoa participa do Service Desk e também é responsável por uma atividade de mudança. Isso demonstra que:',
+   ['A) Função e papel são sempre iguais','B) Uma pessoa pode possuir vários papéis','C) Processo é sinônimo de cargo','D) Função substitui processo'],1,'Papel não é cargo; uma pessoa pode assumir vários papéis.'),
+ q('A organização transfere um conjunto amplo de tarefas para uma empresa externa, que passa a controlá-las e comandá-las. Trata-se de:',
+   ['A) Outtasking','B) Outsourcing','C) Melhoria contínua','D) Utilidade'],1,'Essa é a definição de outsourcing apresentada no material.'),
+ q('Qual combinação produz valor segundo a lógica apresentada na aula?',
+   ['A) Utilidade isoladamente','B) Garantia isoladamente','C) Utilidade + Garantia','D) Tecnologia + terceirização'],2,'Valor é criado pela combinação de utilidade e garantia.'),
+ q('Um processo está documentado, mas seus resultados continuam ruins. Qual postura está mais alinhada ao gerenciamento de serviços?',
+   ['A) Mantê-lo sem alterações porque já está documentado','B) Melhorá-lo continuamente','C) Substituir o processo por uma função','D) Transferir automaticamente ao fornecedor'],1,'O gerenciamento de serviços deve ser melhorado continuamente.')
+];
+
+let S={started:false,teams:[],order:[],turn:0,turnCount:1,dice:null,diceLocked:false,lastOpponent:null,hist:[],revealed:{},blockGateTeamId:null},M=null,R={},timer=null,prepTimer=null;
+const $=x=>document.getElementById(x),sh=a=>{a=[...a];for(let i=a.length-1;i;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function snap(){S.hist.push(JSON.stringify({...S,hist:[]}));if(S.hist.length>25)S.hist.shift()}function team(id){return S.teams.find(x=>x.id===id)}function cur(){return team(S.order[S.turn])}function lane(n){return S.teams.find(x=>x.lane===n)}function toast(x){$('toast').textContent=x;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),2200)}function pts(t,n){t.points=Math.max(0,t.points+n)}function save(){localStorage.setItem('cs99_v30',JSON.stringify({...S,hist:[]}))}
+function setup(){
+  let sel=$('teamCount');
+  sel.innerHTML='';
+  for(let i=2;i<=10;i++)sel.insertAdjacentHTML('beforeend',`<option value="${i}" ${i===7?'selected':''}>${i}</option>`);
+  buildTeamInputs(7);
+}
+function buildTeamInputs(n){
+  n=Math.max(2,Math.min(10,Number(n)||7));
+  $('inputs').innerHTML='';
+  for(let i=1;i<=n;i++)$('inputs').insertAdjacentHTML('beforeend',`<input id="n${i}" value="Equipe ${i}">`);
+  $('drawResult').classList.add('hidden');
+  $('start').classList.add('hidden');
+}
+function draw(){
+  let n=Number($('teamCount').value)||7;
+  let names=Array.from({length:n},(_,i)=>$('n'+(i+1)).value.trim()||`Equipe ${i+1}`);
+  let lanes=sh(Array.from({length:n},(_,i)=>i+1));
+  S.teams=names.map((name,i)=>({id:'T'+(i+1),name,lane:lanes[i],pos:0,points:0,blocked:0,immune:false,eliminated:false,unavail:0,protect:false,power:null}));
+  S.order=sh(S.teams.map(t=>t.id));
+  S.turn=0;S.turnCount=1;S.diceLocked=false;S.revealed={};
+  $('drawResult').classList.remove('hidden');
+  $('drawResult').innerHTML=`<div><h3>Equipe × Pista</h3><ol>${[...S.teams].sort((a,b)=>a.lane-b.lane).map(t=>`<li>Pista ${t.lane} — <b>${t.name}</b></li>`).join('')}</ol></div><div><h3>Ordem</h3><ol>${S.order.map(id=>`<li><b>${team(id).name}</b></li>`).join('')}</ol></div>`;
+  $('start').classList.remove('hidden');
+}
+function start(){snap();S.started=true;$('setup').classList.add('hidden');$('game').classList.remove('hidden');render();save()}
+function status(t){let a=[];if(t.eliminated)a.push('🔴 Auditoria');if(t.blocked)a.push('⛔ Bloqueada');if(t.immune)a.push('🛡️ Imune');if(t.unavail)a.push('👤 Indisp.');if(t.protect)a.push('🎓 Proteção');if(t.power)a.push('🎁 '+t.power);return a.map(x=>`<span class="tag">${x}</span>`).join('')||'<span class="tag">🟢 Ativa</span>'}
+function blockGateActive(){
+  const t=cur();
+  return !!(t && t.blocked && S.blockGateTeamId===t.id);
+}
+function blockGateMessage(){
+  const t=cur();
+  return t?`⛔ ${t.name} está cumprindo 1 rodada de bloqueio. Clique em “CONSUMIR BLOQUEIO / PERDER TURNO” para liberar a partida.`:'⛔ Há um bloqueio pendente.';
+}
+function render(){document.documentElement.style.setProperty('--team-count',Math.max(2,S.teams.length||7));let c=cur();$('now').textContent=c?`${c.name} • Pista ${c.lane}`:'—';$('status').innerHTML=c?status(c):'';$('scores').innerHTML=[...S.teams].sort((a,b)=>b.points-a.points||b.pos-a.pos).map(t=>`<tr style="${c&&t.id===c.id?'background:#0e3550':''}"><td><b>${c&&t.id===c.id?'▶ ':''}${t.name}</b></td><td>${t.lane}</td><td>${t.pos}</td><td>${t.points}</td><td>${status(t)}</td></tr>`).join('');let tr=$('track');S.revealed=S.revealed||{};tr.innerHTML='<div class="hc">PISTA / CASA</div>'+[...Array(36)].map((_,i)=>`<div class="hc">${i+1}<br><span style="color:#4b647b">?</span></div>`).join('');for(let l=1;l<=S.teams.length;l++){let t=lane(l);tr.insertAdjacentHTML('beforeend',`<div class="lab ${c&&c.lane===l?'currentLane':''}"><b>Pista ${l}</b><small>${t?t.name:'—'}</small></div>`);for(let p=1;p<=36;p++){let d=document.createElement('div');d.className='cell'+(c&&c.lane===l?' active':'')+(t&&t.pos===p?' current':'')+(c&&S.dice&&c.lane===l&&Math.min(36,c.pos+S.dice)===p?' suggest':'');let rk=l+'-'+p,rev=!!S.revealed[rk];if(rev)d.classList.add('revealedCell');d.innerHTML=`<span class="num">${p}</span>${rev?`<span class="ico">${I[T[p]]}</span>`:`<span class="mystery">?</span>`}${t&&t.pos===p?`<span class="pawn">${l}</span>`:''}`;d.onclick=()=>cell(l,p);tr.appendChild(d)}}}
+function roll(){
+  let t=cur();
+  if(!t||t.eliminated)return toast('Equipe atual não pode jogar.');
+  if(t.blocked)return toast('⛔ Equipe bloqueada. Clique em “Consumir bloqueio” para registrar manualmente a perda do turno.');
+  if(S.diceLocked)return toast(`🎲 ${t.name} já lançou o dado neste turno. Resolva a Casa ${Math.min(36,t.pos+(S.dice||0))}.`);
+
+  snap();
+  S.diceLocked=true;
+  let n=1+Math.floor(Math.random()*6);
+  S.dice=n;
+  save();
+
+  $('die').textContent='🎲';
+  let k=0,iv=setInterval(()=>{
+    $('die').textContent=1+Math.floor(Math.random()*6);
+    if(++k>8){
+      clearInterval(iv);
+      $('die').textContent=n;
+      $('diceNote').innerHTML=`<b>${t.name} • Pista ${t.lane}</b> • Resultado ${n} → Casa ${Math.min(36,t.pos+n)}.<br><span style="color:#fbbf24">🔒 Dado bloqueado até o próximo turno.</span>`;
+      render();
+    }
+  },80);
+}
+function moveTeamTo(t,p){if(!t)return; p=Math.max(1,Math.min(36,Number(p)||1)); snap(); t.pos=p; S.dice=null; S.revealed=S.revealed||{};S.revealed[t.lane+'-'+p]=true; render(); save(); guardedSafeOpenCell(t,p)}
+function cell(l,p){let t=cur();if(!t)return toast('Nenhuma equipe no turno atual.');if(blockGateActive())return toast(blockGateMessage());if(Number(t.lane)!==Number(l))return toast(`Turno de ${t.name}: use a Pista ${t.lane}.`);moveTeamTo(t,p)}
+function moveSuggested(){let t=cur();if(!t)return toast('Nenhuma equipe no turno atual.');if(blockGateActive())return toast(blockGateMessage());if(!S.dice)return toast('Role o dado primeiro.');moveTeamTo(t,Math.min(36,t.pos+S.dice))}
+function getQ(p,l){let b=Q[p]||Q[35];return b[(l-1)%b.length]}
+function modal(x){clearInterval(timer);clearInterval(prepTimer);$('modal').innerHTML=`<div class="modalBg"><div class="modal">${x}</div></div>`}function closeM(){clearInterval(timer);clearInterval(prepTimer);$('modal').innerHTML='';M=null;R={}}
+
+function preQuestion(sec){
+  clearInterval(timer);clearInterval(prepTimer);
+  let n=5,pc=$('prepCount'),body=$('qbody'),ov=$('prepOverlay'),tm=$('tm');
+  if(tm)tm.textContent=sec+'s';
+  if(!pc||!body||!ov){play(sec);return}
+  pc.textContent=n;
+  prepTimer=setInterval(()=>{
+    n--;
+    if(n>0){pc.textContent=n;return}
+    clearInterval(prepTimer);
+    body.classList.add('ready');
+    ov.classList.add('hide');
+    setTimeout(()=>{if(ov)ov.style.display='none'},320);
+    play(sec);
+  },1000);
+}
+function qPreludeMarkup(inner){
+  return `<div class="mb preq" id="qbody"><div class="prepOverlay" id="prepOverlay"><div class="prepTitle">Preparem-se</div><div class="prepCount" id="prepCount">5</div><div class="prepHint">A questão será liberada e o tempo começará automaticamente.</div></div>${inner}</div>`;
+}
+
+function shuffledQuestion(qq){
+  let pairs=qq.opts.map((opt,i)=>({opt,correct:i===qq.correct}));
+  pairs=sh(pairs);
+  const letters=['A','B','C','D','E'];
+  const clean=s=>String(s).replace(/^[A-E]\)\s*/,'');
+  return {
+    text:qq.text,
+    opts:pairs.map((x,i)=>`${letters[i]}) ${clean(x.opt)}`),
+    correct:pairs.findIndex(x=>x.correct),
+    why:qq.why||''
+  };
+}
+function ask(t,p,type,qq){qq=shuffledQuestion(qq);M={kind:'q',teamId:t.id,pos:p,type,q:qq};R={};let sec=type==='quick'?20:type==='board'?45:30;modal(`<div class="mh"><div><div class="ey">${I[type]} CASA ${p}</div><h2>${themes[p]||'Manutenção de Software'}</h2></div><div class="timer" id="tm">${sec}s</div></div>${qPreludeMarkup(`<div class="q">${qq.text}</div>${qq.opts.map(o=>`<div class="opt">${o}</div>`).join('')}<div id="ans" class="ans hidden"><b>Resposta correta:</b> ${qq.opts[qq.correct]}<br>${qq.why||''}</div><div class="ma"><button class="btn primary" onclick="play(${sec})">↻ Reiniciar cronômetro</button><button class="btn good" onclick="reveal()">👁 Revelar resposta</button><button id="judgeBtn" class="btn hidden" onclick="judge()">▶ Registrar resultados</button><button class="btn" onclick="closeM()">Fechar</button></div><div id="judge" class="hidden"></div>`)}`);setTimeout(()=>preQuestion(sec),80)}
+function reveal(){$('ans').classList.remove('hidden');$('judgeBtn').classList.remove('hidden')}function play(s){clearInterval(timer);let x=s,$tm=$('tm');tm.textContent=x+'s';timer=setInterval(()=>{tm.textContent=(--x)+'s';if(x<=0)clearInterval(timer)},1000)}
+function judge(){
+  let id=M.teamId;
+  $('judge').classList.remove('hidden');
+  $('judge').innerHTML=`<div class="judge">${S.teams.filter(t=>!t.eliminated).map(t=>{
+    if(t.blocked){
+      return `<div class="jr blockedVote" id="j${t.id}"><b>${t.name}${t.id===id?' ⭐':''}</b><div class="blockedLabel">🔒 BLOQUEADA — NÃO PARTICIPA</div></div>`;
+    }
+    return `<div class="jr" id="j${t.id}"><b>${t.name}${t.id===id?' ⭐':''}</b><div class="rb"><button class="ok" onclick="mark('${t.id}',1)">✓</button><button class="no" onclick="mark('${t.id}',0)">✕</button></div></div>`;
+  }).join('')}</div><div class="ma"><button class="btn good" onclick="confirmResults()">CONFIRMAR RESULTADOS</button></div>`;
+}
+function mark(id,v){let t=team(id);if(!t||t.blocked)return toast('🔒 Equipe bloqueada não participa desta questão.');R[id]=!!v;let e=$('j'+id);e.classList.remove('mkok','mkno');e.classList.add(v?'mkok':'mkno')}
+function confirmResults(){
+  snap();
+  Object.entries(R).forEach(([id,v])=>{
+    let rt=team(id);
+    if(rt && !rt.blocked && v)pts(rt,1);
+  });
+  let t=team(M.teamId);
+  if(!t.blocked && R[t.id]===false)t.blocked=1;
+  save();render();
+  let msg=(!t.blocked&&R[t.id]===false)?`${t.name}: bloqueada por 1 turno. Próxima equipe em jogo.`:'Resultados registrados. Próxima equipe em jogo.';
+  finishTurn(msg);
+}
+function event(t,p,type,e){M={kind:'event',teamId:t.id,pos:p,type,event:e};modal(`<div class="mh"><div><div class="ey">${I[type]} CASA ${p}</div><h2>${type==='adv'?'VANTAGEM':type==='set'?'REVÉS':'REORGANIZAÇÃO'}</h2></div></div><div class="mb"><div class="q">${e[0]}</div><div class="opt">${e[1]}</div><div class="ma"><button class="btn ${type==='adv'?'good':type==='set'?'bad':'warn'}" onclick="applyEvent()">APLICAR EFEITO</button><button class="btn" onclick="closeM()">Cancelar</button></div></div>`)}
+
+function activateForcedMove(t,newPos,reason){
+  newPos=Math.max(1,Math.min(36,newPos));
+  const key=t.lane+'-'+newPos;
+  const wasRevealed=!!(S.revealed&&S.revealed[key]);
+
+  if(newPos<t.pos && t.power==='Escudo'){
+    t.power=null;
+    save();render();closeM();
+    toast(`🛡️ ${t.name} usou o ESCUDO e anulou a penalidade de voltar casas.`);
+    setTimeout(()=>next(),650);
+    return;
+  }
+
+  t.pos=newPos;
+  S.revealed=S.revealed||{};
+  save();
+  render();
+  closeM();
+
+  if(!wasRevealed){
+    S.revealed[key]=true;
+    save();
+    render();
+    toast(`${reason} → Casa ${newPos}. A casa estava fechada e será aplicada agora.`);
+    setTimeout(()=>guardedSafeOpenCell(t,newPos),450);
+  }else{
+    toast(`${reason} → Casa ${newPos}. A casa já estava aberta; nenhum novo efeito é aplicado.`);
+    setTimeout(()=>next(),500);
+  }
+}
+function applyEvent(){
+  snap();
+  let t=team(M.teamId), name=M.event[0];
+
+  if(M.type==='adv'){
+    if(name==='MONITORAMENTO ATIVO') pts(t,1);
+    else if(name==='BASE DE CONHECIMENTO') t.power='Base de Conhecimento';
+    else if(name==='CROSS-TRAINING') t.protect=true;
+    else if(name==='SLA ESTENDIDO') t.power='SLA Estendido';
+    else if(name==='🛡️ ESCUDO') t.power='Escudo';
+    else if(name==='IMUNIDADE') t.immune=true;
+    else if(name==='CAPACIDADE EXTRA'){
+      return activateForcedMove(t,Math.min(36,t.pos+1),'🎁 CAPACIDADE EXTRA');
+    }
+
+  }else if(M.type==='set'){
+    if(name==='SHADOW IT DESCOBERTA') pts(t,-1);
+    else if(name==='ESPECIALISTA INDISPONÍVEL'){
+      if(t.protect)t.protect=false;else t.unavail=1;
+    }
+    else if(name==='CAPACIDADE NO LIMITE'){
+      return activateForcedMove(t,Math.max(1,t.pos-2),'💀 CAPACIDADE NO LIMITE');
+    }
+    else if(name==='CONHECIMENTO NO FORNECEDOR'){
+      pts(t,-1);
+      if(t.protect)t.protect=false;else t.unavail=1;
+    }
+    else if(name==='PROCESSO SEM RESPONSÁVEL') pts(t,-2);
+    else if(name==='MÉTRICA SEM VALOR') pts(t,-1);
+    else if(name==='OPERAÇÃO BLOQUEADA') t.blocked=1;
+
+  }else if(M.type==='reorg'){
+    const result=reorg(name,t);
+    // reorg() may return a forced movement descriptor
+    if(result && result.team && Number.isFinite(result.pos)){
+      return activateForcedMove(result.team,result.pos,result.reason||'🔄 REORGANIZAÇÃO');
+    }
+  }
+
+  save();
+  render();
+  finishTurn(name+' aplicado. Próxima equipe em jogo.');
+}
+function reorg(n,t){
+  let a=S.teams.filter(x=>!x.eliminated),
+      lead=[...a].sort((x,y)=>y.points-x.points||y.pos-x.pos)[0],
+      last=[...a].sort((x,y)=>x.points-y.points||x.pos-y.pos)[0];
+
+  if(n==='MUDANÇA DE PRIORIDADE'){
+    return {team:last,pos:Math.min(36,last.pos+1),reason:'🔄 MUDANÇA DE PRIORIDADE'};
+  }
+  else if(n==='AUDITORIA INTERNA'){
+    // Troca de posições: não ativa as casas.
+    let p=lead.pos;lead.pos=last.pos;last.pos=p;
+  }
+  else if(n==='REALOCAÇÃO'){
+    pts(t,1);
+  }
+  else if(n==='REVISÃO DE PORTFÓLIO'){
+    a.forEach(x=>x.blocked=0); S.blockGateTeamId=null;
+  }
+  else if(n==='MUDANÇA DE ESTRUTURA'){
+    // Troca de posição com a equipe imediatamente à frente: não ativa as casas.
+    let f=[...a].filter(x=>x.pos>t.pos).sort((x,y)=>x.pos-y.pos)[0];
+    if(f){let p=t.pos;t.pos=f.pos;f.pos=p}
+  }
+  else if(n==='CONTINGÊNCIA'){
+    a.filter(x=>x.points===0).forEach(x=>pts(x,1));
+  }
+  else{
+    t.immune=true;
+  }
+  return null;
+}
+function opponent(ch){let a=S.teams.filter(t=>!t.eliminated&&t.id!==ch.id&&!t.immune&&t.id!==S.lastOpponent);if(!a.length)a=S.teams.filter(t=>!t.eliminated&&t.id!==ch.id&&!t.immune);return [...a].sort((x,y)=>x.points-y.points||x.pos-y.pos)[0]}
+function incident(ch,p,type){
+  let o=opponent(ch);
+  if(!o)return toast('Sem adversária elegível.');
+  // Uma única pergunta, 4 alternativas, uma tentativa por equipe.
+  M={kind:'duel',ch:ch.id,op:o.id,pos:p,type:type,qq:shuffledQuestion(sh(DUEL4)[0])};
+  modal(`<div class="mh"><div><div class="ey">🔥 CASA ${p}</div><h2>SALA DE INCIDENTES</h2></div></div>
+  <div class="mb"><div class="duel"><div class="dt"><div class="nm">${ch.name}</div></div><div class="vs">VS</div><div class="dt"><div class="nm">${o.name}</div></div></div>
+  <div class="opt">Uma pergunta. Uma tentativa por equipe. Acertou: +1 ponto. Errou: -1 ponto e fica 1 turno sem jogar o dado. Se ambas acertarem, ambas pontuam e deixam a disputa sem penalidade.</div>
+  <div class="ma"><button class="btn bad" onclick="duelQ()">🔥 REVELAR INCIDENTE</button></div></div>`);
+}
+function duelQ(){
+ let m=M,a=team(m.ch),b=team(m.op),qq=m.qq;R={};
+ modal(`<div class="mh"><div><div class="ey">🔥 INCIDENTE • TENTATIVA ÚNICA</div><h2>${a.name} × ${b.name}</h2></div><div class="timer" id="tm">30s</div></div>${qPreludeMarkup(`<div class="q">${qq.text}</div>${qq.opts.map(o=>`<div class="opt">${o}</div>`).join('')}<div id="ans" class="ans hidden"><b>Resposta correta:</b> ${qq.opts[qq.correct]}<br>${qq.why||''}</div><div class="ma"><button class="btn primary" onclick="play(30)">↻ Reiniciar cronômetro</button><button class="btn good" onclick="revealDuel()">👁 Revelar resposta</button><button id="djbtn" class="btn hidden" onclick="duelJudge()">▶ Julgar tentativa</button></div><div id="dj" class="hidden"></div>`)}`);
+ setTimeout(()=>preQuestion(30),80);
+}
+function revealDuel(){$('ans').classList.remove('hidden');$('djbtn').classList.remove('hidden')}function duelJudge(){let a=team(M.ch),b=team(M.op);$('dj').classList.remove('hidden');$('dj').innerHTML=`<div class="duelJudge"><div class="dj" id="duel-a"><b>${a.name}</b><div class="ma"><button class="btn good" onclick="dmark('a',1)">✓</button><button class="btn bad" onclick="dmark('a',0)">✕</button></div></div><div class="dj" id="duel-b"><b>${b.name}</b><div class="ma"><button class="btn good" onclick="dmark('b',1)">✓</button><button class="btn bad" onclick="dmark('b',0)">✕</button></div></div></div><div class="ma"><button class="btn good" onclick="duelConfirm()">CONFIRMAR QUESTÃO</button></div>`}function dmark(s,v){
+  R[s]=!!v;
+  const box=document.getElementById('duel-'+s);
+  if(box){box.classList.remove('selectedOk','selectedNo');box.classList.add(v?'selectedOk':'selectedNo')}
+  toast(`${s==='a'?team(M.ch).name:team(M.op).name}: ${v?'acerto':'erro'} marcado`);
+}function duelConfirm(){
+  if(R.a===undefined||R.b===undefined)return toast('Marque as duas equipes.');
+  duelOneShotResult();
+}
+function duelOneShotResult(){
+  let a=team(M.ch),b=team(M.op),ra=R.a,rb=R.b,headline='',detail='';
+  if(ra&&rb){headline='AS DUAS EQUIPES ACERTARAM';detail='Ambas recebem +1 ponto e deixam a Sala de Incidentes.'}
+  else if(!ra&&!rb){headline='AS DUAS EQUIPES ERRARAM';detail='Ambas perdem 1 ponto e deixam a Sala de Incidentes.'}
+  else if(ra&&!rb){headline=`${a.name} ACERTOU`;detail=`${a.name} recebe +1 ponto. ${b.name} perde 1 ponto.`}
+  else{headline=`${b.name} ACERTOU`;detail=`${b.name} recebe +1 ponto. ${a.name} perde 1 ponto.`}
+  modal(`<div class="mh"><div><div class="ey">🔥 RESULTADO DO INCIDENTE</div><h2>${headline}</h2></div></div>
+  <div class="mb"><div class="duel"><div class="dt"><div class="nm">${a.name}</div><div class="sc">${ra?'✓':'✕'}</div></div><div class="vs">×</div><div class="dt"><div class="nm">${b.name}</div><div class="sc">${rb?'✓':'✕'}</div></div></div>
+  <div class="opt">${detail}</div><div class="ma"><button class="btn bad" onclick="applyOneShotDuel()">APLICAR RESULTADO</button></div></div>`);
+}
+function applyOneShotDuel(){
+  snap();
+  let a=team(M.ch),b=team(M.op);
+
+  if(R.a){
+    pts(a,1);
+  }else{
+    pts(a,-1);
+    a.blocked=1;
+  }
+
+  if(R.b){
+    pts(b,1);
+  }else{
+    pts(b,-1);
+    b.blocked=1;
+  }
+
+  S.lastOpponent=b.id;
+  save();render();closeM();
+  toast('Sala de Incidentes encerrada. Quem errou ficou bloqueado por 1 turno.');
+  setTimeout(()=>next(),350);
+}
+function critical(ch,p){let o=opponent(ch);if(!o)return toast('Sem adversária elegível.');M={kind:'crit',ch:ch.id,op:o.id,pos:p,sa:0,sb:0,idx:0,qs:sh([...DUEL.assets,...DUEL.supplier,...DUEL.roles]).slice(0,6)};critQ()}
+function critQ(){let m=M,a=team(m.ch),b=team(m.op);if(m.idx>=5)return critEnd();let qq=shuffledQuestion(m.qs[m.idx]);m.qq=qq;R={};modal(`<div class="mh"><div><div class="ey">☠️ INCIDENTE CRÍTICO • ${m.idx+1}/5</div><h2>${a.name} × ${b.name}</h2></div><div class="timer" id="tm">35s</div></div>${qPreludeMarkup(`<div class="duel"><div class="dt"><div class="nm">${a.name}</div><div class="sc">${m.sa}</div></div><div class="vs">VS</div><div class="dt"><div class="nm">${b.name}</div><div class="sc">${m.sb}</div></div></div><div class="q">${qq.text}</div>${qq.opts.map(o=>`<div class="opt">${o}</div>`).join('')}<div id="ans" class="ans hidden"><b>Resposta correta:</b> ${qq.opts[qq.correct]}</div><div class="ma"><button class="btn primary" onclick="play(35)">↻ Reiniciar cronômetro</button><button class="btn good" onclick="revealCrit()">👁 Revelar resposta</button><button id="cjb" class="btn hidden" onclick="critJudge()">▶ Julgar</button></div><div id="cj" class="hidden"></div>`)}`);setTimeout(()=>preQuestion(35),80)}
+function revealCrit(){$('ans').classList.remove('hidden');$('cjb').classList.remove('hidden')}function critJudge(){let a=team(M.ch),b=team(M.op);$('cj').classList.remove('hidden');$('cj').innerHTML=`<div class="duelJudge"><div class="dj"><b>${a.name}</b><div class="ma"><button class="btn good" onclick="dmark('a',1)">✓</button><button class="btn bad" onclick="dmark('a',0)">✕</button></div></div><div class="dj"><b>${b.name}</b><div class="ma"><button class="btn good" onclick="dmark('b',1)">✓</button><button class="btn bad" onclick="dmark('b',0)">✕</button></div></div></div><div class="ma"><button class="btn good" onclick="critConfirm()">CONFIRMAR</button></div>`}function critConfirm(){if(R.a===undefined||R.b===undefined)return toast('Marque as duas.');if(R.a)M.sa++;if(R.b)M.sb++;M.idx++;critQ()}function critEnd(){if(M.sa===M.sb){M.qs.push(sh(DUEL.base)[0]);M.idx=4;return critQ()}let a=team(M.ch),b=team(M.op),w=M.sa>M.sb?a:b,l=w.id===a.id?b:a;M.win=w.id;M.lose=l.id;modal(`<div class="mh"><div><div class="ey">☠️ RESULTADO</div><h2>${w.name} permanece na operação</h2></div></div><div class="mb"><div class="opt">${l.name} deixa a disputa pelo título e passa para a Central de Auditoria.</div><div class="ma"><button class="btn bad" onclick="critApply()">CONFIRMAR ELIMINAÇÃO</button></div></div>`)}function critApply(){snap();team(M.lose).eliminated=true;team(M.win).immune=true;S.lastOpponent=M.lose;save();render();finishTurn('Equipe enviada à Auditoria. Próxima equipe em jogo.')}
+function final(t){M={kind:'final',teamId:t.id,score:0,idx:0,qs:sh(FINAL).slice(0,5)};finalQ()}function finalQ(){let m=M,t=team(m.teamId);if(m.idx>=5)return finalEnd();let qq=shuffledQuestion(m.qs[m.idx]);m.qq=qq;modal(`<div class="mh"><div><div class="ey">🏆 SALA DA DIRETORIA • ${m.idx+1}/5</div><h2>${t.name}</h2></div><div class="timer" id="tm">35s</div></div>${qPreludeMarkup(`<div class="q">${qq.text}</div>${qq.opts.map(o=>`<div class="opt">${o}</div>`).join('')}<div id="ans" class="ans hidden"><b>Resposta correta:</b> ${qq.opts[qq.correct]}</div><div class="ma"><button class="btn primary" onclick="play(35)">↻ Reiniciar cronômetro</button><button class="btn good" onclick="revealFinal()">👁 Revelar resposta</button><button id="fjb" class="btn hidden" onclick="finalJudge()">▶ Julgar</button></div><div id="fj" class="hidden"></div>`)}`);setTimeout(()=>preQuestion(35),80)}
+function revealFinal(){$('ans').classList.remove('hidden');$('fjb').classList.remove('hidden')}function finalJudge(){$('fj').classList.remove('hidden');$('fj').innerHTML=`<div class="ma"><button class="btn good" onclick="finalMark(1)">✓ ACERTOU</button><button class="btn bad" onclick="finalMark(0)">✕ ERROU</button></div>`}function finalMark(v){if(v)M.score++;M.idx++;finalQ()}function finalEnd(){let t=team(M.teamId),win=M.score>=3;modal(`<div class="mh"><div><div class="ey">🏆 RESULTADO</div><h2>${win?'OPERAÇÃO APROVADA':'OPERAÇÃO NÃO APROVADA'}</h2></div></div><div class="mb"><div class="q">${t.name}: ${M.score}/5</div><div class="opt">${win?'A equipe venceu o EduTrack — Operação Manutenção.':'A equipe permanece na Casa 36; outra equipe ainda pode disputar a final.'}</div><div class="ma"><button class="btn ${win?'good':'warn'}" onclick="${win?'closeM()':'finishTurn(\'Próxima equipe em jogo.\')'}">${win?'🏆 ENCERRAR':'VOLTAR'}</button></div></div>`)}
+
+let LAST_ERROR_DIAG='';
+function gameContext(){
+  try{
+    const t=typeof cur==='function'?cur():null;
+    return {equipe:t?t.name:null,pista:t?t.lane:null,casa:t?t.pos:null,modal:(typeof M!=='undefined'&&M?M.kind:null),evento:(typeof M!=='undefined'&&M?(M.type||M.pos||null):null)};
+  }catch(e){return{}}
+}
+function showGameError(message,source,line,col,error){
+  const c=gameContext();
+  LAST_ERROR_DIAG=[
+    'EduTrack — Operação Manutenção v3.0',
+    'Mensagem: '+(message||'Erro desconhecido'),
+    'Equipe: '+(c.equipe||'n/d'),
+    'Pista: '+(c.pista||'n/d'),
+    'Casa: '+(c.casa||'n/d'),
+    'Modal/Evento: '+(c.modal||'n/d')+' / '+(c.evento||'n/d'),
+    'Linha: '+(line||'n/d')+' Coluna: '+(col||'n/d'),
+    'Detalhe: '+(error&&error.stack?error.stack:(error||'n/d'))
+  ].join('\n');
+  const old=document.getElementById('globalErrorPanel');if(old)old.remove();
+  const host=document.createElement('div');host.id='globalErrorPanel';host.className='errorPanel';
+  host.innerHTML=`<div class="errorCard"><h2>⚠️ Erro no jogo</h2><p>A partida foi preservada. Copie o diagnóstico ou volte ao tabuleiro.</p><div class="errorDiag" id="errorDiagText"></div><div class="errorActions"><button class="btn bad" onclick="copyGameDiagnostic()">📋 Copiar diagnóstico</button><button class="btn" onclick="recoverToBoard()">↩ Voltar ao tabuleiro</button></div></div>`;
+  document.body.appendChild(host);document.getElementById('errorDiagText').textContent=LAST_ERROR_DIAG;
+}
+function copyGameDiagnostic(){
+  if(navigator.clipboard)navigator.clipboard.writeText(LAST_ERROR_DIAG).then(()=>toast('Diagnóstico copiado.'));
+  else{let ta=document.createElement('textarea');ta.value=LAST_ERROR_DIAG;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Diagnóstico copiado.')}
+}
+function recoverToBoard(){
+  try{clearInterval(timer);clearInterval(prepTimer);const p=document.getElementById('globalErrorPanel');if(p)p.remove();closeM();render();save()}catch(e){location.reload()}
+}
+window.addEventListener('error',e=>{showGameError(e.message,e.filename,e.lineno,e.colno,e.error);e.preventDefault()});
+window.addEventListener('unhandledrejection',e=>{showGameError('Promise rejeitada: '+(e.reason?.message||e.reason||'erro'),location.href,null,null,e.reason);e.preventDefault()});
+
+let CELL_OPEN_GUARD=false;
+function guardedSafeOpenCell(t,p){
+  if(CELL_OPEN_GUARD) return;
+  CELL_OPEN_GUARD=true;
+  try{ safeOpenCell(t,p); }
+  finally{ setTimeout(()=>{CELL_OPEN_GUARD=false},120); }
+}
+
+function safeOpenCell(t,p){try{openCell(t,p)}catch(e){showGameError(e.message,location.href,null,null,e)}}
+
+function openCell(t,p){let type=T[p],idx=(t.lane-1)%7;if(['challenge','quick','board'].includes(type))ask(t,p,type,getQ(p,t.lane));else if(type==='adv')event(t,p,type,ADV[idx]);else if(type==='set')event(t,p,type,SET[idx]);else if(type==='reorg')event(t,p,type,REORG[idx]);else if(type==='n1'||type==='n2')incident(t,p,type);else if(type==='crit')critical(t,p);else final(t)}
+function finishTurn(msg){closeM();next();if(msg)toast(msg)}
+function next(){
+  if(blockGateActive())return toast(blockGateMessage());
+  snap();
+  const previous=cur();
+  if(previous){
+    previous.unavail=0;
+    // Imunidade dura até concluir o próprio turno seguinte.
+    if(previous.immune) previous.immune=false;
+  }
+
+  if(!Array.isArray(S.order) || S.order.length===0){
+    showGameError('Ordem de turnos vazia ou inválida.',location.href,null,null,null);
+    return;
+  }
+
+  let nextIndex=S.turn;
+  let found=false;
+  for(let step=1;step<=S.order.length;step++){
+    const candidateIndex=(S.turn+step)%S.order.length;
+    const candidate=team(S.order[candidateIndex]);
+    if(candidate && !candidate.eliminated){
+      nextIndex=candidateIndex;
+      found=true;
+      break;
+    }
+  }
+
+  if(!found){
+    showGameError('Nenhuma equipe ativa disponível para o próximo turno.',location.href,null,null,null);
+    return;
+  }
+
+  S.turn=nextIndex;
+  S.turnCount=(S.turnCount||1)+1;
+  S.dice=null;
+  S.diceLocked=false;
+  $('die').textContent='🎲';
+  const now=cur();
+  S.blockGateTeamId=(now && now.blocked)?now.id:null;
+  $('diceNote').textContent=S.blockGateTeamId
+    ?`Turno ${S.turnCount}: ${now.name} • Pista ${now.lane}. BLOQUEADA — consuma o bloqueio para perder este turno.`
+    :`Turno ${S.turnCount}: ${now.name} • Pista ${now.lane}. Role o dado e clique na casa correspondente.`;
+  save();
+  render();
+  toast(S.blockGateTeamId?`⛔ ${now.name}: turno bloqueado. Consuma o bloqueio.`:`Agora joga: ${now.name} • Pista ${now.lane}`);
+}function consume(){
+  let t=cur();
+  if(!t || !t.blocked)return toast('Esta equipe não possui bloqueio.');
+  if(S.blockGateTeamId!==t.id)return toast('O bloqueio está registrado, mas só deve ser consumido quando chegar o próximo turno desta equipe.');
+  snap();
+  t.blocked=0;
+  S.blockGateTeamId=null;
+  S.dice=null;
+  S.diceLocked=false;
+  save();render();
+  toast(`⛔ ${t.name}: bloqueio consumido. Turno perdido e partida liberada.`);
+  setTimeout(()=>next(),650);
+}function undo(){if(!S.hist.length)return toast('Nada para desfazer.');let h=S.hist,prev=JSON.parse(h.pop());S={...prev,hist:h};save();render();closeM();toast('Ação desfeita.')}
+function turnDiagnostic(){
+  const lines=[
+    `Turno atual index: ${S.turn}`,
+    `Turno nº: ${S.turnCount||1}`,
+    `Equipe atual: ${cur()?cur().name:'n/d'} | Pista ${cur()?cur().lane:'n/d'}`,
+    `Dado bloqueado: ${S.diceLocked?'SIM':'NÃO'} | Resultado: ${S.dice??'n/d'}`,
+    'Ordem:',
+    ...S.order.map((id,i)=>{
+      const t=team(id);
+      return `${i===S.turn?'▶':' '} [${i}] ${t?t.name:'N/D'} | Pista ${t?t.lane:'N/D'} | Casa ${t?t.pos:'N/D'} | ${t&&t.eliminated?'ELIMINADA':'ATIVA'}`;
+    })
+  ].join('\n');
+  alert(lines);
+}
+
+function reset(){if(confirm('Reiniciar toda a partida?')){localStorage.removeItem('cs99_v30');location.reload()}}
+$('draw').onclick=draw;$('start').onclick=start;$('applyCount').onclick=()=>buildTeamInputs(Number($('teamCount').value));$('teamCount').onchange=()=>buildTeamInputs(Number($('teamCount').value));$('roll').onclick=roll;$('moveSuggested').onclick=moveSuggested;$('next').onclick=next;$('consume').onclick=consume;$('undo').onclick=undo;$('save').onclick=()=>{save();toast('Partida salva neste navegador.')};$('reset').onclick=reset;setup();let raw=localStorage.getItem('cs99_v30');if(raw){try{let x=JSON.parse(raw);if(x.started){S={...S,...x,hist:[]};if(S.blockGateTeamId===undefined)S.blockGateTeamId=(cur()&&cur().blocked)?cur().id:null;$('setup').classList.add('hidden');$('game').classList.remove('hidden');render()}}catch(e){}}
+</script>
+<script>
+// === EduTrack question bank: 154 unique questions ===
+const EDUTRACK_BANK=[{"text": "Uma empresa altera seu sistema para atender uma nova regra fiscal que entrará em vigor. Qual tipo de manutenção predomina?", "opts": ["Corretiva", "Adaptativa", "Refatoração"], "correct": 1, "why": ""}, {"text": "Um erro faz o sistema calcular incorretamente o desconto de determinados clientes. A equipe modifica o código para eliminar o problema. Trata-se de:", "opts": ["Corretiva", "Evolutiva", "Adaptativa"], "correct": 0, "why": ""}, {"text": "Uma equipe reorganiza internamente o código sem alterar seu comportamento observável. Essa intervenção corresponde principalmente a:", "opts": ["Manutenção adaptativa", "Manutenção corretiva", "Refatoração"], "correct": 2, "why": ""}, {"text": "O cliente solicita uma nova funcionalidade de exportação de relatórios que não existia no produto. A mudança é predominantemente:", "opts": ["Evolutiva", "Corretiva", "Preventiva"], "correct": 0, "why": ""}, {"text": "A equipe modifica antecipadamente um módulo para reduzir a possibilidade de problemas futuros de manutenção. Trata-se principalmente de:", "opts": ["Adaptativa", "Corretiva", "Preventiva"], "correct": 2, "why": ""}, {"text": "O sistema precisa ser alterado devido a uma mudança no ambiente externo em que funciona. Qual categoria melhor representa a situação?", "opts": ["Adaptativa", "Corretiva", "Refatoração"], "correct": 0, "why": ""}, {"text": "Qual intervenção tem como objetivo principal corrigir um comportamento incorreto já identificado?", "opts": ["Evolutiva", "Corretiva", "Adaptativa"], "correct": 1, "why": ""}, {"text": "Por que a legibilidade recebe tanta importância na manutenção?", "opts": ["Desenvolvedores passam muito tempo lendo código existente.", "Código legível não precisa de testes.", "Código legível nunca sofre alterações."], "correct": 0, "why": ""}, {"text": "O principal objetivo de um guia de estilo é:", "opts": ["Diminuir obrigatoriamente o número de linhas.", "Padronizar a escrita e favorecer legibilidade e manutenção.", "Impedir diferentes pessoas de alterar o código."], "correct": 1, "why": ""}, {"text": "Uma equipe utiliza nomes como x1, aux2 e proc para conceitos importantes do domínio. Qual aspecto é prejudicado diretamente?", "opts": ["Velocidade da rede", "Capacidade de armazenamento", "Legibilidade"], "correct": 2, "why": ""}, {"text": "Ao escrever código que provavelmente será mantido durante anos, deve-se priorizar:", "opts": ["Exclusivamente a velocidade de implementação.", "Leitura e entendimento futuros.", "A menor quantidade possível de arquivos."], "correct": 1, "why": ""}, {"text": "Código gerado por IA dispensa preocupação com código limpo?", "opts": ["Sim, porque LLMs sempre geram código correto.", "Sim, se o código compilar.", "Não, ele ainda precisa ser compreensível e mantido."], "correct": 2, "why": ""}, {"text": "Qual prática está mais alinhada à manutenibilidade?", "opts": ["Manter consistência de nomes e formatação.", "Usar um estilo diferente em cada arquivo.", "Priorizar abreviações pouco conhecidas."], "correct": 0, "why": ""}, {"text": "Investir um pouco mais de tempo ao escrever código pode compensar quando:", "opts": ["Elimina completamente futuras alterações.", "Reduz o tempo de compreensão em futuras manutenções.", "Impede outros desenvolvedores de modificá-lo."], "correct": 1, "why": ""}, {"text": "Por que código limpo não elimina necessariamente a necessidade de documentação?", "opts": ["Porque código é uma especificação de baixo nível.", "Porque comentários executam junto com o programa.", "Porque toda linha precisa ser explicada."], "correct": 0, "why": ""}, {"text": "Comentários de API são especialmente importantes para:", "opts": ["Somente usuários finais.", "Apenas o autor original.", "Desenvolvedores que utilizarão o código."], "correct": 2, "why": ""}, {"text": "Qual informação é adequada na documentação de um método público?", "opts": ["Parâmetros e valor de retorno.", "Senhas utilizadas pelo desenvolvedor.", "Histórico completo de commits."], "correct": 0, "why": ""}, {"text": "Quando é recomendado escrever bons comentários?", "opts": ["Apenas quando surgir um bug.", "Próximo ao momento em que o código é escrito.", "Somente depois que o sistema se tornar legado."], "correct": 1, "why": ""}, {"text": "Qual ferramenta está associada à geração de documentação em Java?", "opts": ["Javadoc", "GDB", "Git"], "correct": 0, "why": ""}, {"text": "Comentários privados ou inline estão associados principalmente:", "opts": ["Ao contrato público de uma API exclusivamente.", "À implementação interna.", "Ao planejamento financeiro."], "correct": 1, "why": ""}, {"text": "Além de explicar o retorno, a documentação de um método público pode informar:", "opts": ["O sistema operacional do autor.", "Apenas sua quantidade de linhas.", "Exceções que ele pode lançar."], "correct": 2, "why": ""}, {"text": "Information Hiding está diretamente relacionado a:", "opts": ["Encapsulamento.", "Logging.", "Debugging."], "correct": 0, "why": ""}, {"text": "Por que esconder detalhes internos de um módulo?", "opts": ["Para eliminar sua interface.", "Para impedir completamente seu uso.", "Para reduzir dependências sobre decisões internas."], "correct": 2, "why": ""}, {"text": "Segundo a estrutura apresentada no material, um módulo possui:", "opts": ["Interface + implementação.", "Apenas interface.", "Apenas banco de dados."], "correct": 0, "why": ""}, {"text": "Uma aplicação deve permitir diferentes formas de pagamento sem alterar sua lógica central. Qual ideia favorece essa flexibilidade?", "opts": ["Dependência rígida de uma classe concreta.", "Injeção de dependências.", "Variáveis globais."], "correct": 1, "why": ""}, {"text": "Interfaces podem contribuir para código flexível porque:", "opts": ["Favorecem dependência de abstrações.", "Impedem qualquer customização.", "Eliminam todas as implementações."], "correct": 0, "why": ""}, {"text": "Um algoritmo de ordenação permite que o cliente escolha diferentes critérios. Isso é exemplo de:", "opts": ["Dívida de deployment.", "Crash.", "Customização de comportamento."], "correct": 2, "why": ""}, {"text": "É necessário utilizar todas as técnicas de flexibilidade em qualquer sistema?", "opts": ["Sim, obrigatoriamente.", "Não, depende do contexto e dos requisitos.", "Sim, mas somente em sistemas legados."], "correct": 1, "why": ""}, {"text": "Um defeito existente no código necessariamente provocará uma falha em toda execução?", "opts": ["Sim.", "Não.", "Apenas em sistemas legados."], "correct": 1, "why": ""}, {"text": "Uma falha que causa o término do programa é chamada de:", "opts": ["Crash.", "Refactoring.", "Deployment."], "correct": 0, "why": ""}, {"text": "Qual é um tipo de bug abordado no material?", "opts": ["Bug administrativo.", "Bug de orçamento.", "Bug de concorrência."], "correct": 2, "why": ""}, {"text": "Um código contém um defeito em um caminho que nunca foi executado. É possível afirmar que:", "opts": ["O defeito automaticamente deixou de existir.", "O defeito pode existir sem uma falha observada.", "O código está comprovadamente correto."], "correct": 1, "why": ""}, {"text": "Um problema decorrente de interpretação incorreta do que o sistema deveria fazer é:", "opts": ["Bug de entendimento de requisitos.", "Refatoração.", "Code review."], "correct": 0, "why": ""}, {"text": "Um acesso incorreto a regiões de memória pertence principalmente à categoria:", "opts": ["Bugs de memória.", "Bugs de documentação.", "Manutenção adaptativa."], "correct": 0, "why": ""}, {"text": "Uma condição de corrida envolvendo duas threads está associada principalmente a:", "opts": ["Guia de estilo.", "Dívida de requisitos.", "Bug de concorrência."], "correct": 2, "why": ""}, {"text": "Qual é a primeira grande atividade do fluxo de depuração apresentado?", "opts": ["Fazer deployment.", "Reproduzir o bug.", "Refatorar o sistema."], "correct": 1, "why": ""}, {"text": "Depois de reproduzir um bug, uma etapa importante é:", "opts": ["Localizá-lo.", "Apagar o repositório.", "Alterar os requisitos."], "correct": 0, "why": ""}, {"text": "Qual recurso mostra a sequência de chamadas associada a uma exceção?", "opts": ["Pull Request.", "README.", "Stack trace."], "correct": 2, "why": ""}, {"text": "Um teste que reproduz um bug ajuda principalmente:", "opts": ["Na investigação e posterior verificação da correção.", "A eliminar a necessidade de compreender o problema.", "A impedir futuras versões do software."], "correct": 0, "why": ""}, {"text": "Delta Debugging procura:", "opts": ["Aumentar o tamanho da entrada.", "Simplificar entradas que causam um bug.", "Substituir testes por logs."], "correct": 1, "why": ""}, {"text": "Qual situação pode tornar um bug difícil de reproduzir?", "opts": ["Dependência das condições da rede.", "Uso de nomes claros.", "Existência de documentação."], "correct": 0, "why": ""}, {"text": "Depois de localizar o bug, é importante:", "opts": ["Identificar sua causa.", "Ignorar a origem e publicar imediatamente.", "Remover todos os testes."], "correct": 0, "why": ""}, {"text": "Um breakpoint serve para:", "opts": ["Interromper a execução em um ponto para inspeção.", "Apagar automaticamente o bug.", "Criar documentação."], "correct": 0, "why": ""}, {"text": "Durante uma sessão de depuração, inspecionar o estado permite:", "opts": ["Observar valores relevantes durante a execução.", "Alterar automaticamente os requisitos.", "Eliminar o código-fonte."], "correct": 0, "why": ""}, {"text": "Qual nível de log é adequado para um evento normal importante da aplicação?", "opts": ["Info", "Fatal", "Warn"], "correct": 0, "why": ""}, {"text": "Uso de memória muito alto, que pode virar problema, pode ser registrado como:", "opts": ["Warn", "Info", "Trace exclusivamente"], "correct": 0, "why": ""}, {"text": "Uma falha de conexão com o banco de dados pode ser registrada como:", "opts": ["Error", "Info", "Refactor"], "correct": 0, "why": ""}, {"text": "Quando um problema fará a aplicação encerrar, o nível adequado pode ser:", "opts": ["Fatal", "Info", "Debug"], "correct": 0, "why": ""}, {"text": "Mensagens detalhadas usadas para acompanhar o fluxo de execução podem utilizar:", "opts": ["Trace", "Fatal", "Warn exclusivamente"], "correct": 0, "why": ""}, {"text": "Dívida técnica é uma metáfora associada principalmente:", "opts": ["A decisões técnicas que podem dificultar manutenção futura.", "Ao preço das licenças do software.", "Ao salário dos desenvolvedores."], "correct": 0, "why": ""}, {"text": "Na metáfora, o tempo extra gasto posteriormente devido à dívida corresponde:", "opts": ["Aos juros.", "Ao lucro.", "Ao orçamento."], "correct": 0, "why": ""}, {"text": "O principal inicial corresponde:", "opts": ["À economia obtida inicialmente ao usar um atalho.", "Ao número de usuários.", "À quantidade de bugs."], "correct": 0, "why": ""}, {"text": "Toda dívida técnica é necessariamente uma decisão ruim?", "opts": ["Sim.", "Não.", "Apenas em startups."], "correct": 1, "why": ""}, {"text": "Uma dívida técnica justificável deve:", "opts": ["Ser administrada e eventualmente amortizada.", "Ser ignorada indefinidamente.", "Ser transformada em requisito."], "correct": 0, "why": ""}, {"text": "Baixa cobertura de testes pode estar relacionada a:", "opts": ["Dívida de testes.", "Manutenção adaptativa.", "Guia de estilo."], "correct": 0, "why": ""}, {"text": "Duplicação de código e problemas estruturais podem caracterizar:", "opts": ["Dívida de arquitetura e design.", "Somente bug de memória.", "Manutenção adaptativa."], "correct": 0, "why": ""}, {"text": "Qual característica aparece associada a sistemas legados?", "opts": ["Tecnologias antigas.", "Ausência obrigatória de usuários.", "Código sempre escrito em Java."], "correct": 0, "why": ""}, {"text": "Um sistema legado pode continuar sendo utilizado porque:", "opts": ["Pode possuir grande relevância para o negócio.", "Sistemas legados nunca apresentam problemas.", "Tecnologias antigas são sempre superiores."], "correct": 0, "why": ""}, {"text": "A dificuldade de encontrar profissionais especializados em determinada tecnologia é:", "opts": ["Uma possível característica de sistemas legados.", "Uma forma de manutenção corretiva.", "Um nível de log."], "correct": 0, "why": ""}, {"text": "Qual linguagem aparece no material como exemplo clássico de tecnologia legada?", "opts": ["COBOL", "HTML", "CSS"], "correct": 0, "why": ""}, {"text": "Migrar COBOL automaticamente para Java pode ser difícil devido:", "opts": ["A diferenças de paradigma e modelos de dados.", "À impossibilidade de ler código COBOL.", "À inexistência de compiladores."], "correct": 0, "why": ""}, {"text": "Um sistema antigo, complexo e crítico para a organização:", "opts": ["Pode exigir análise cuidadosa antes de uma substituição.", "Deve obrigatoriamente ser apagado.", "Não pode ser considerado legado."], "correct": 0, "why": ""}, {"text": "Além de tecnologia antiga, sistemas legados podem acumular:", "opts": ["Dívida técnica.", "Somente documentação.", "Apenas código limpo."], "correct": 0, "why": ""}, {"text": "O Waterfall está associado principalmente a:", "opts": ["Planejamento detalhado.", "Ausência completa de planejamento.", "Mudanças contínuas durante qualquer etapa."], "correct": 0, "why": ""}, {"text": "Métodos ágeis reconhecem que:", "opts": ["É difícil prever tudo no início.", "Todos os requisitos são imutáveis.", "Software deve ser tratado exatamente como produto físico."], "correct": 0, "why": ""}, {"text": "Durante uma sprint, o time tende a ser:", "opts": ["Protegido de mudanças no escopo da sprint.", "Obrigado a aceitar qualquer nova demanda imediatamente.", "Dissolvido."], "correct": 0, "why": ""}, {"text": "Em um time tradicional de sustentação:", "opts": ["Um time pode desenvolver e outro manter.", "Todos os usuários mantêm o sistema.", "Não existe manutenção."], "correct": 0, "why": ""}, {"text": "Um squad possui:", "opts": ["Responsabilidade fim a fim.", "Responsabilidade apenas pela codificação inicial.", "Responsabilidade apenas pelos bugs."], "correct": 0, "why": ""}, {"text": "A organização em squads favorece:", "opts": ["Skin in the game.", "Separação absoluta entre desenvolvimento e manutenção.", "Ausência de responsabilidade sobre produção."], "correct": 0, "why": ""}, {"text": "Qual prática faz parte das práticas de manutenção apresentadas?", "opts": ["Revisão de código.", "Proibição de Pull Requests.", "Remoção de logs."], "correct": 0, "why": ""}, {"text": "Na analogia de programação em pares com IA, o desenvolvedor permanece como:", "opts": ["Piloto.", "Copiloto.", "Passageiro."], "correct": 0, "why": ""}, {"text": "Na mesma analogia, a LLM funciona como:", "opts": ["Copiloto.", "Piloto obrigatório.", "Usuário final."], "correct": 0, "why": ""}, {"text": "Um prompt para corrigir bugs fica mais verificável quando solicita:", "opts": ["Um teste que reproduza o problema.", "Apenas uma explicação genérica.", "Exclusão dos testes."], "correct": 0, "why": ""}, {"text": "Além de modificar código, uma LLM pode apoiar:", "opts": ["Compreensão de código.", "Apenas criação de imagens.", "Somente deployment."], "correct": 0, "why": ""}, {"text": "Outro uso apresentado para prompts de manutenção é:", "opts": ["Recomendação de melhorias.", "Eliminação automática da equipe.", "Substituição obrigatória do sistema."], "correct": 0, "why": ""}, {"text": "Após uma IA propor uma correção, uma boa estratégia é:", "opts": ["Verificar a solução com testes.", "Publicar sem executar.", "Remover o caso que apresentava erro."], "correct": 0, "why": ""}, {"text": "O uso de IA elimina a necessidade de compreender o código mantido?", "opts": ["Sim.", "Não.", "Apenas quando a IA gera testes."], "correct": 1, "why": ""}, {"text": "O código funciona, mas contém duplicações que dificultam mudanças futuras. Isso se aproxima de:", "opts": ["Dívida técnica", "Crash", "Manutenção adaptativa"], "correct": 0, "why": ""}, {"text": "O sistema precisa atender uma nova legislação.", "opts": ["Corretiva", "Adaptativa", "Refatoração"], "correct": 1, "why": ""}, {"text": "A aplicação encerra inesperadamente.", "opts": ["Crash", "Code review", "Refactoring"], "correct": 0, "why": ""}, {"text": "O desenvolvedor pausa a execução em uma linha específica.", "opts": ["Breakpoint", "Javadoc", "Post mortem"], "correct": 0, "why": ""}, {"text": "Uma mensagem registra que o disco está quase cheio.", "opts": ["Info", "Warn", "Fatal"], "correct": 1, "why": ""}, {"text": "Um módulo expõe interface e esconde sua implementação.", "opts": ["Information Hiding", "Delta Debugging", "Bug Bounty"], "correct": 0, "why": ""}, {"text": "Um novo recurso é solicitado pelo cliente.", "opts": ["Evolutiva", "Corretiva", "Refatoração"], "correct": 0, "why": ""}, {"text": "Você recebeu um bug difícil de compreender. Primeiro deve tentar:", "opts": ["Reproduzi-lo", "Reescrever o sistema", "Fazer deployment"], "correct": 0, "why": ""}, {"text": "Uma exceção gerou uma pilha de chamadas. Você deve analisar:", "opts": ["Stack trace", "README", "Licença"], "correct": 0, "why": ""}, {"text": "A equipe quer evitar estilos diferentes entre arquivos. Deve adotar:", "opts": ["Guia de estilo", "Bug bounty", "Deployment freeze"], "correct": 0, "why": ""}, {"text": "Uma função pública possui comportamento pouco óbvio. Para seus usuários, deve-se melhorar:", "opts": ["Documentação da API", "Hardware", "Rede"], "correct": 0, "why": ""}, {"text": "Um atalho está aumentando continuamente o custo das mudanças. A equipe deve avaliar:", "opts": ["Amortização da dívida", "Novo atalho", "Remoção dos testes"], "correct": 0, "why": ""}, {"text": "A IA propôs uma correção para um bug. Antes de aceitar:", "opts": ["Verifique com testes", "Faça deploy direto", "Exclua o histórico"], "correct": 0, "why": ""}, {"text": "Um sistema crítico usa tecnologia antiga. Antes de substituí-lo:", "opts": ["Avalie riscos e relevância para o negócio", "Apague-o", "Ignore seus usuários"], "correct": 0, "why": ""}, {"text": "Código é normalmente lido muitas vezes depois de escrito. Logo:", "opts": ["Legibilidade importa", "Nomes não importam", "Documentação é proibida"], "correct": 0, "why": ""}, {"text": "Nem todo defeito ocasiona uma falha. Portanto:", "opts": ["Um defeito pode permanecer sem ser observado", "Todo defeito causa crash", "Testes são inúteis"], "correct": 0, "why": ""}, {"text": "Mudanças são inevitáveis em software. Logo, é útil:", "opts": ["Projetar pensando em mudanças", "Proibir alterações", "Remover interfaces"], "correct": 0, "why": ""}, {"text": "Uma dívida técnica pode trazer benefício de curto prazo. Isso significa que:", "opts": ["Pode ser uma decisão consciente", "Nunca precisa ser paga", "Sempre é um bug"], "correct": 0, "why": ""}, {"text": "Squads têm responsabilidade fim a fim. Isso inclui:", "opts": ["Evolução e manutenção", "Somente concepção", "Somente documentação"], "correct": 0, "why": ""}, {"text": "Um teste reproduz o bug antes da correção e passa depois dela. Ele ajuda a:", "opts": ["Verificar a correção", "Criar dívida", "Ocultar o erro"], "correct": 0, "why": ""}, {"text": "A LLM é tratada como copiloto. Portanto:", "opts": ["O desenvolvedor continua responsável", "A IA assume toda decisão", "Revisão deixa de existir"], "correct": 0, "why": ""}, {"text": "Uma startup precisa lançar rapidamente uma feature e aceita conscientemente uma solução provisória. Isso pode ser:", "opts": ["Dívida técnica estratégica", "Crash", "Bug de memória"], "correct": 0, "why": ""}, {"text": "A feature trouxe receita, mas a solução provisória está encarecendo cada mudança. O custo adicional representa:", "opts": ["Juros", "Principal inicial", "Lucro"], "correct": 0, "why": ""}, {"text": "Um sistema COBOL é antigo, mas processa operações críticas. A diretoria deve:", "opts": ["Considerar valor e riscos antes de decidir", "Desligá-lo imediatamente", "Ignorar custos de migração"], "correct": 0, "why": ""}, {"text": "A empresa quer que quem desenvolve também responda pela evolução. A organização mais alinhada é:", "opts": ["Squads", "Separação absoluta desenvolvimento/sustentação", "Nenhum responsável definido"], "correct": 0, "why": ""}, {"text": "O tempo de entrega cresce devido a problemas técnicos acumulados. Uma hipótese relevante é:", "opts": ["Juros de dívida técnica", "Excesso de código limpo", "Uso de documentação"], "correct": 0, "why": ""}, {"text": "A empresa pretende usar IA para manutenção. Qual postura é mais adequada?", "opts": ["Manter verificação humana e testes", "Aceitar qualquer saída", "Eliminar revisão"], "correct": 0, "why": ""}, {"text": "Uma modernização apresenta alto custo e alto risco. A decisão deve considerar:", "opts": ["Contexto técnico e de negócio", "Apenas idade do código", "Apenas linguagem utilizada"], "correct": 0, "why": ""}, {"text": "Para aumentar a responsabilidade sobre o produto durante todo seu ciclo, prefira:", "opts": ["Squad fim a fim", "Equipes completamente isoladas", "Ausência de proprietário"], "correct": 0, "why": ""}, {"text": "Para que outro desenvolvedor analise uma mudança antes da integração, utilize:", "opts": ["Code review", "Fatal log", "Delta Debugging"], "correct": 0, "why": ""}, {"text": "Um sistema recebe muitas mudanças ao longo dos anos. Isso reforça a importância de:", "opts": ["Manutenibilidade", "Código descartável", "Impedir evolução"], "correct": 0, "why": ""}, {"text": "Para facilitar a compreensão por novos desenvolvedores, deve-se priorizar:", "opts": ["Código legível", "Abreviações obscuras", "Funções deliberadamente complexas"], "correct": 0, "why": ""}, {"text": "A empresa possui dívida técnica relevante. A estratégia mais coerente é:", "opts": ["Priorizá-la considerando seus impactos", "Ignorá-la sempre", "Classificá-la automaticamente como bug"], "correct": 0, "why": ""}, {"text": "A equipe pretende alterar um sistema sem compreender seu comportamento atual. O risco tende a:", "opts": ["Aumentar", "Desaparecer", "Ser sempre zero"], "correct": 0, "why": ""}, {"text": "Um processo de manutenção sustentável deve considerar:", "opts": ["Evolução contínua do software", "Software como produto imutável", "Ausência de mudanças"], "correct": 0, "why": ""}, {"text": "Um erro ocorre apenas quando duas threads atualizam simultaneamente o mesmo dado. Qual diagnóstico é mais provável?", "opts": ["Bug de documentação", "Bug de concorrência", "Manutenção evolutiva", "Dívida de requisitos"], "correct": 1, "why": ""}, {"text": "Um crash acontece apenas quando determinada entrada possui milhares de registros. Para reduzir a entrada mantendo o erro, pode-se utilizar:", "opts": ["Javadoc", "Pull Request", "Delta Debugging", "Bug Bounty"], "correct": 2, "why": ""}, {"text": "Um erro aparece em produção e o stack trace indica uma sequência de chamadas até uma conversão inválida. O stack trace auxilia principalmente:", "opts": ["Na localização do bug", "Na criação dos requisitos", "Na definição do orçamento", "Na substituição do sistema"], "correct": 0, "why": ""}, {"text": "Um bug só ocorre em determinados horários. Essa característica afeta principalmente:", "opts": ["A nomenclatura do código", "A reprodução do bug", "A documentação pública", "O guia de estilo"], "correct": 1, "why": ""}, {"text": "O sistema registra uma falha de chamada de API, mas continua executando. Qual nível é adequado?", "opts": ["Info", "Warn obrigatoriamente", "Error", "Fatal obrigatoriamente"], "correct": 2, "why": ""}, {"text": "A aplicação não consegue iniciar um serviço essencial e será encerrada. Qual registro é mais coerente?", "opts": ["Trace", "Info", "Debug", "Fatal"], "correct": 3, "why": ""}, {"text": "Após reproduzir e localizar um bug, qual etapa deve receber atenção antes da correção?", "opts": ["Identificar sua causa", "Fazer deploy", "Criar uma nova linguagem", "Remover logs"], "correct": 0, "why": ""}, {"text": "Uma equipe economizou dois dias usando um atalho. Meses depois, alterações relacionadas gastam tempo adicional. Os dois dias economizados representam:", "opts": ["Juros", "Principal inicial", "Crash", "Dívida de hardware"], "correct": 1, "why": ""}, {"text": "Uma funcionalidade deveria levar quatro dias, mas leva seis por causa de problemas estruturais existentes. Os dois dias extras representam:", "opts": ["Juros da dívida técnica", "Principal inicial", "Manutenção adaptativa", "Refatoração concluída"], "correct": 0, "why": ""}, {"text": "Qual situação melhor representa dívida de testes?", "opts": ["Baixa cobertura de testes", "Linguagem antiga", "Mudança fiscal", "Falha de energia"], "correct": 0, "why": ""}, {"text": "Qual situação está mais associada à dívida de arquitetura e design?", "opts": ["Duplicação de código e estrutura inadequada", "Nova legislação", "Hardware defeituoso", "Aumento de usuários"], "correct": 0, "why": ""}, {"text": "Quando uma dívida técnica é assumida conscientemente para acelerar uma entrega, a melhor interpretação é:", "opts": ["É necessariamente incompetência.", "Pode constituir decisão estratégica.", "Nunca precisa ser revisitada.", "Não produz custos futuros."], "correct": 1, "why": ""}, {"text": "O maior risco de acumular dívida sem administrá-la é:", "opts": ["Os juros consumirem esforço crescente de evolução.", "O código tornar-se automaticamente mais rápido.", "Os requisitos deixarem de mudar.", "A manutenção desaparecer."], "correct": 0, "why": ""}, {"text": "Qual ação é mais coerente após identificar uma dívida relevante?", "opts": ["Avaliar impacto e planejar sua amortização.", "Esconder sua existência da equipe.", "Remover testes relacionados.", "Aumentar deliberadamente sua complexidade."], "correct": 0, "why": ""}, {"text": "Um sistema de 20 anos utiliza tecnologia antiga, possui alta complexidade e é essencial ao negócio. Qual afirmação é mais adequada?", "opts": ["Idade basta para determinar sua remoção.", "Deve ser mantido para sempre sem mudanças.", "A decisão exige avaliar fatores técnicos e de negócio.", "Sistemas antigos não possuem valor."], "correct": 2, "why": ""}, {"text": "A empresa quer converter automaticamente milhões de linhas de COBOL para Java. Qual fator pode dificultar a migração?", "opts": ["Diferenças de paradigmas e modelos de dados.", "Java não aceita dados.", "COBOL não possui variáveis.", "Sistemas COBOL não podem ser executados."], "correct": 0, "why": ""}, {"text": "Uma tecnologia possui poucos profissionais disponíveis no mercado. Em um sistema legado, isso representa:", "opts": ["Facilidade de contratação.", "Uma dificuldade de manutenção.", "Manutenção corretiva.", "Código limpo."], "correct": 1, "why": ""}, {"text": "Qual conjunto é mais compatível com características de legado?", "opts": ["Tecnologia antiga + complexidade + dívida técnica.", "Código novo + ausência de usuários + baixo valor.", "Apenas bugs de interface.", "Somente documentação extensa."], "correct": 0, "why": ""}, {"text": "Reescrever completamente um sistema legado é:", "opts": ["Sempre a única opção.", "Sempre a opção mais barata.", "Uma decisão que precisa considerar riscos e contexto.", "Obrigatória quando há COBOL."], "correct": 2, "why": ""}, {"text": "A relevância para o negócio ajuda a explicar:", "opts": ["Por que certos sistemas antigos continuam operando.", "Por que código antigo não possui bugs.", "Por que manutenção deixa de ser necessária.", "Por que documentação é inútil."], "correct": 0, "why": ""}, {"text": "Um sistema legado acumula mudanças durante décadas. Qual problema pode tornar futuras mudanças mais caras?", "opts": ["Dívida técnica acumulada.", "Uso de nomes claros.", "Boa documentação.", "Testes automatizados adequados."], "correct": 0, "why": ""}, {"text": "Um desenvolvedor conclui uma alteração e abre um Pull Request. Outro desenvolvedor analisa a mudança e identifica um possível bug. Essa prática é:", "opts": ["Code review", "Delta Debugging", "Manutenção adaptativa", "Bug de concorrência"], "correct": 0, "why": ""}, {"text": "Uma organização quer responsabilidade desde a concepção até a manutenção. Qual modelo atende melhor?", "opts": ["Desenvolvimento e manutenção completamente separados", "Squad com responsabilidade fim a fim", "Nenhum time responsável após o release", "Terceirização sem acompanhamento"], "correct": 1, "why": ""}, {"text": "Uma IA gera uma correção plausível para um bug. Qual ação fornece evidência mais forte de que o problema foi resolvido?", "opts": ["Aceitar a explicação da IA.", "Avaliar somente se o código ficou menor.", "Executar um teste que reproduzia o bug.", "Remover o código anterior."], "correct": 2, "why": ""}, {"text": "Qual sequência é mais adequada para um prompt de correção apoiada por IA?", "opts": ["Corrigir → apagar testes → publicar", "Reproduzir com teste → corrigir → verificar", "Publicar → investigar → testar", "Refatorar tudo → remover histórico → publicar"], "correct": 1, "why": ""}, {"text": "Uma LLM ajuda a explicar um módulo desconhecido. Esse uso está associado a:", "opts": ["Compreensão de código", "Manutenção física", "Falha de hardware", "Deployment freeze"], "correct": 0, "why": ""}, {"text": "No pareamento com IA apresentado no material, a distribuição correta é:", "opts": ["IA = piloto; desenvolvedor = passageiro", "Desenvolvedor = piloto; LLM = copiloto", "Cliente = piloto; LLM = compilador", "LLM = piloto; testes = copiloto"], "correct": 1, "why": ""}, {"text": "Qual risco permanece mesmo quando uma IA gera código?", "opts": ["O código ainda pode ser inadequado ou difícil de manter.", "O código necessariamente estará correto.", "Testes deixam de ser necessários.", "Revisões humanas tornam-se impossíveis."], "correct": 0, "why": ""}, {"text": "Uma atualização em produção provoca falhas. A equipe ainda não consegue reproduzir o problema localmente. Qual sequência é mais consistente com o processo de depuração?", "opts": ["Corrigir aleatoriamente → publicar → testar.", "Refatorar → documentar → ignorar a falha.", "Reproduzir → localizar → identificar a causa → corrigir.", "Reescrever → publicar → investigar.", "Remover logs → alterar requisitos → publicar."], "correct": 2, "why": ""}, {"text": "Um módulo foi implementado rapidamente para atender uma oportunidade de mercado. A decisão trouxe receita, mas agora cada alteração exige esforço adicional. Qual análise é mais adequada?", "opts": ["O esforço adicional pode representar juros da dívida técnica.", "O sistema obrigatoriamente deve ser descartado.", "A decisão inicial não pode ser chamada de dívida técnica.", "Todo custo adicional caracteriza bug de concorrência.", "Dívida técnica não possui relação com manutenção."], "correct": 0, "why": ""}, {"text": "Um sistema crítico usa COBOL e possui milhões de linhas. A diretoria propõe conversão automática para Java. Qual consideração é mais consistente?", "opts": ["Toda conversão automática preserva perfeitamente o comportamento.", "Diferenças de paradigma e modelos de dados podem tornar a migração complexa.", "O fato de usar COBOL torna o sistema irrelevante.", "Java elimina automaticamente a dívida técnica.", "A migração dispensa testes."], "correct": 1, "why": ""}, {"text": "Uma função crítica possui centenas de linhas, pouca documentação e baixa cobertura de testes. Antes de realizar uma mudança extensa, a estratégia mais segura é:", "opts": ["Alterar diretamente e observar a produção.", "Duplicar toda a função.", "Compreender o comportamento e criar proteção por testes.", "Remover comentários antigos e publicar.", "Pedir à IA para substituir todo o sistema sem revisão."], "correct": 2, "why": ""}, {"text": "Uma IA propõe uma alteração extensa para corrigir um bug de cálculo. Qual abordagem oferece melhor mecanismo de verificação?", "opts": ["Aceitar porque o código foi gerado automaticamente.", "Comparar apenas o número de linhas.", "Perguntar à IA se ela tem certeza.", "Criar um teste que reproduza o erro e verificar a correção com ele.", "Remover o cenário que provoca o bug."], "correct": 3, "why": ""}, {"text": "Uma empresa separa totalmente desenvolvimento e manutenção. Os desenvolvedores não acompanham problemas posteriores de suas funcionalidades. Qual alternativa apresentada no material procura superar esse problema?", "opts": ["Remover code reviews.", "Squads com responsabilidade fim a fim e skin in the game.", "Eliminar documentação.", "Aumentar dívida técnica.", "Utilizar apenas Waterfall."], "correct": 1, "why": ""}, {"text": "Uma aplicação apresenta falha somente em condições específicas de rede e horário. Qual combinação é mais adequada para iniciar a investigação?", "opts": ["Reconhecer a dificuldade de reprodução e buscar controlar as condições que desencadeiam o bug.", "Considerar automaticamente que não existe bug.", "Reescrever toda a aplicação.", "Classificar o problema como dívida de documentação.", "Remover todos os logs."], "correct": 0, "why": ""}, {"text": "O EduTrack possui uma função crítica difícil de compreender, cobertura de testes baixa e alterações que frequentemente provocam regressões. Qual decisão é mais coerente?", "opts": ["Continuar adicionando funcionalidades sem alterar o processo.", "Reescrever imediatamente todo o produto.", "Criar proteção por testes, compreender o código e priorizar a redução da dívida mais impactante.", "Remover os testes existentes.", "Considerar o problema exclusivamente como manutenção adaptativa."], "correct": 2, "why": ""}, {"text": "Uma equipe afirma: “O sistema ainda funciona, então a dívida técnica não precisa ser tratada”. Qual é o principal problema desse raciocínio?", "opts": ["Dívida técnica só existe quando ocorre crash.", "A dívida pode aumentar o custo de futuras mudanças mesmo que o sistema funcione atualmente.", "Todo sistema funcional está livre de dívida.", "Dívida técnica diz respeito apenas a hardware.", "Dívida técnica desaparece com o tempo."], "correct": 1, "why": ""}, {"text": "Uma empresa possui um sistema antigo e crítico. A manutenção é lenta, poucos profissionais conhecem a tecnologia e uma reescrita completa seria extremamente arriscada. Qual decisão é mais consistente?", "opts": ["Desligar imediatamente o sistema.", "Manter tudo indefinidamente sem melhorias.", "Avaliar estratégias de modernização considerando risco, valor para o negócio e condições técnicas.", "Migrar automaticamente todo o código e dispensar testes.", "Ignorar a dificuldade de contratação."], "correct": 2, "why": ""}, {"text": "Um time utiliza IA para produzir rapidamente alterações em código que ninguém da equipe compreende adequadamente. Qual princípio estudado está sendo colocado em risco?", "opts": ["A importância da compreensão e manutenibilidade do código.", "A necessidade de tornar todo software legado.", "O princípio de evitar testes.", "A obrigação de usar Waterfall.", "A eliminação de documentação."], "correct": 0, "why": ""}, {"text": "Após uma entrega apressada, uma equipe registra explicitamente a dívida assumida e planeja refatorar o módulo após validar a funcionalidade no mercado. Qual interpretação é mais adequada?", "opts": ["Toda dívida técnica resulta necessariamente de desconhecimento.", "A equipe tomou uma dívida deliberadamente e estabeleceu uma estratégia para administrá-la.", "A situação não pode ser considerada dívida técnica porque foi planejada.", "Refatoração não possui relação com manutenção.", "Dívida técnica deliberada não produz juros."], "correct": 1, "why": ""}, {"text": "Durante um incidente, uma IA sugere imediatamente uma alteração. Um desenvolvedor percebe, porém, que ninguém conseguiu reproduzir o bug. Qual decisão está mais alinhada ao processo estudado?", "opts": ["Publicar a alteração porque a IA demonstrou confiança.", "Tentar primeiro reproduzir o bug e obter uma forma de verificar a correção.", "Remover a funcionalidade definitivamente.", "Ignorar o incidente.", "Substituir o sistema por outro framework."], "correct": 1, "why": ""}, {"text": "Uma organização quer reduzir o custo de manutenção no longo prazo. Qual conjunto de ações está mais alinhado aos conteúdos estudados?", "opts": ["Código legível + documentação adequada + testes + revisão de código + gestão da dívida técnica.", "Mais código + menos testes + ausência de documentação + correções diretas em produção.", "Reescrita periódica de todos os sistemas + ausência de manutenção.", "Uso de IA sem revisão + eliminação dos testes + dependências rígidas.", "Separação completa entre quem desenvolve e quem responde pelo produto + ausência de code review."], "correct": 0, "why": ""}];
+const ED_CHALLENGE_HOUSES=[1,3,7,12,13,17,21,25,29,32,35];
+const ED_QUICK_HOUSES=[8,24,33], ED_BOARD_HOUSES=[20,30], ED_INCIDENT_HOUSES=[4,10,16,23];
+const ED_THEMES=['Tipos de manutenção','Código limpo','Documentação','Código flexível','Bugs','Depuração','Ferramentas de depuração e logs','Dívida técnica','Sistemas legados','Processos','IA na manutenção'];
+// Replace question banks house × lane. Every displayed question also shuffles alternatives.
+ED_CHALLENGE_HOUSES.forEach((h,hi)=>{Q[h]=EDUTRACK_BANK.slice(hi*7,hi*7+7);themes[h]=ED_THEMES[hi];});
+ED_QUICK_HOUSES.forEach((h,hi)=>{Q[h]=EDUTRACK_BANK.slice(77+hi*7,77+hi*7+7);themes[h]=['Identifique o conceito','Escolha a ação','Verdade conceitual'][hi];});
+ED_BOARD_HOUSES.forEach((h,hi)=>{Q[h]=EDUTRACK_BANK.slice(98+hi*7,98+hi*7+7);themes[h]=['Decisão técnica e negócio','Processo e qualidade'][hi];});
+function edIncidentQuestion(p,l){let hi=ED_INCIDENT_HOUSES.indexOf(p);return EDUTRACK_BANK[112+hi*7+((l-1)%7)];}
+incident=function(ch,p,type){let o=opponent(ch);if(!o)return toast('Sem adversária elegível.');M={kind:'duel',ch:ch.id,op:o.id,pos:p,type:type,qq:shuffledQuestion(edIncidentQuestion(p,ch.lane))};modal(`<div class="mh"><div><div class="ey">🔥 CASA ${p}</div><h2>SALA DE INCIDENTES</h2></div></div><div class="mb"><div class="duel"><div class="dt"><div class="nm">${ch.name}</div></div><div class="vs">VS</div><div class="dt"><div class="nm">${o.name}</div></div></div><div class="opt">Questão exclusiva da Pista ${ch.lane}. Uma tentativa por equipe. Acertou: +1 ponto. Errou: -1 ponto e fica 1 turno sem jogar o dado.</div><div class="ma"><button class="btn bad" onclick="duelQ()">🔥 REVELAR INCIDENTE</button></div></div>`);};
+critical=function(ch,p){let o=opponent(ch);if(!o)return toast('Sem adversária elegível.');let qq=shuffledQuestion(EDUTRACK_BANK[140+((ch.lane-1)%7)]);M={kind:'critOne',ch:ch.id,op:o.id,pos:p,qq:qq};R={};modal(`<div class="mh"><div><div class="ey">☠️ INCIDENTE CRÍTICO • PISTA ${ch.lane}</div><h2>${ch.name} × ${o.name}</h2></div><div class="timer" id="tm">35s</div></div>${qPreludeMarkup(`<div class="q">${qq.text}</div>${qq.opts.map(o=>`<div class="opt">${o}</div>`).join('')}<div id="ans" class="ans hidden"><b>Resposta correta:</b> ${qq.opts[qq.correct]}</div><div class="ma"><button class="btn primary" onclick="play(35)">↻ Reiniciar cronômetro</button><button class="btn good" onclick="revealCritOne()">👁 Revelar resposta</button><button id="c1jb" class="btn hidden" onclick="critOneJudge()">▶ Julgar</button></div><div id="c1j" class="hidden"></div>`)}`);setTimeout(()=>preQuestion(35),80);};
+window.revealCritOne=function(){$('ans').classList.remove('hidden');$('c1jb').classList.remove('hidden')};
+window.critOneJudge=function(){let a=team(M.ch),b=team(M.op);$('c1j').classList.remove('hidden');$('c1j').innerHTML=`<div class="duelJudge"><div class="dj" id="duel-a"><b>${a.name}</b><div class="ma"><button class="btn good" onclick="dmark('a',1)">✓</button><button class="btn bad" onclick="dmark('a',0)">✕</button></div></div><div class="dj" id="duel-b"><b>${b.name}</b><div class="ma"><button class="btn good" onclick="dmark('b',1)">✓</button><button class="btn bad" onclick="dmark('b',0)">✕</button></div></div></div><div class="ma"><button class="btn bad" onclick="critOneConfirm()">CONFIRMAR INCIDENTE</button></div>`;};
+window.critOneConfirm=function(){if(R.a===undefined||R.b===undefined)return toast('Marque as duas equipes.');snap();let a=team(M.ch),b=team(M.op);if(R.a)pts(a,2);else{pts(a,-1);a.blocked=1}if(R.b)pts(b,2);else{pts(b,-1);b.blocked=1}S.lastOpponent=b.id;save();render();finishTurn('Incidente Crítico encerrado. Acerto: +2; erro: -1 e bloqueio por 1 turno.');};
+final=function(t){let qq=shuffledQuestion(EDUTRACK_BANK[147+((t.lane-1)%7)]);M={kind:'finalOne',teamId:t.id,qq:qq};modal(`<div class="mh"><div><div class="ey">🏆 SALA DA DIRETORIA • PISTA ${t.lane}</div><h2>${t.name}</h2></div><div class="timer" id="tm">35s</div></div>${qPreludeMarkup(`<div class="q">${qq.text}</div>${qq.opts.map(o=>`<div class="opt">${o}</div>`).join('')}<div id="ans" class="ans hidden"><b>Resposta correta:</b> ${qq.opts[qq.correct]}</div><div class="ma"><button class="btn primary" onclick="play(35)">↻ Reiniciar cronômetro</button><button class="btn good" onclick="revealFinalOne()">👁 Revelar resposta</button><button id="f1jb" class="btn hidden" onclick="finalOneJudge()">▶ Julgar</button></div>`)}`);setTimeout(()=>preQuestion(35),80);};
+window.revealFinalOne=function(){$('ans').classList.remove('hidden');$('f1jb').classList.remove('hidden')};
+window.finalOneJudge=function(){let t=team(M.teamId);modal(`<div class="mh"><div><div class="ey">🏆 DECISÃO FINAL</div><h2>${t.name}</h2></div></div><div class="mb"><div class="q">A equipe acertou a questão final?</div><div class="ma"><button class="btn good" onclick="finalOneResult(1)">✓ ACERTOU</button><button class="btn bad" onclick="finalOneResult(0)">✕ ERROU</button></div></div>`);};
+window.finalOneResult=function(v){let t=team(M.teamId);if(v){modal(`<div class="mh"><div><div class="ey">🏆 RESULTADO</div><h2>MANUTENÇÃO APROVADA</h2></div></div><div class="mb"><div class="q">${t.name} venceu o EduTrack — Operação Manutenção.</div><div class="ma"><button class="btn good" onclick="closeM()">🏆 ENCERRAR</button></div></div>`);}else{finishTurn('Resposta final incorreta. A equipe permanece na Casa 36; outra equipe ainda pode disputar a final.');}};
+// Branding text after DOM is ready.
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.legend').forEach(e=>e.innerHTML='🚨 Desafio · 🎁 Vantagem · 💀 Revés · 🔥 Incidente · ⚡ Rápida · ☎️ Diretoria · 🔄 Reorganização · ☠️ Crítico · 🏆 Final');});
+</script>
+
+<script src="/socket.io/socket.io.js"></script>
+<style>
+#liveBox{position:fixed;right:16px;top:78px;z-index:55;width:280px;background:#071522;border:1px solid #31526c;border-radius:14px;padding:12px;box-shadow:0 18px 45px #0008}
+#liveBox h3{margin:0 0 8px;font-size:15px;color:#7dd3fc}
+#liveBox .liveRow{display:flex;justify-content:space-between;gap:8px;font-size:12px;margin:4px 0}
+#liveBox .liveCount{font-size:26px;font-weight:1000}
+#liveBox img{width:150px;height:150px;background:#fff;border-radius:10px;display:block;margin:8px auto}
+#liveBox .tiny{font-size:10px;color:#9fb3c8;word-break:break-all}
+#liveBox .liveActions{display:flex;gap:6px;margin-top:8px}
+#liveBox .liveActions button{flex:1}
+@media(max-width:1100px){#liveBox{position:static;width:auto;margin:8px 16px}}
+
+#podiumOverlay{position:fixed;inset:0;z-index:500;background:rgba(1,5,11,.94);display:none;align-items:center;justify-content:center;padding:24px}
+#podiumOverlay.show{display:flex}
+#podiumCard{width:min(900px,94vw);background:#071522;border:1px solid #31526c;border-radius:24px;padding:28px;box-shadow:0 30px 100px #000b;text-align:center}
+#podiumCard h2{font-size:34px;margin:0 0 4px}
+#podiumCard p{margin:0 0 22px}
+#podium{display:flex;align-items:flex-end;justify-content:center;gap:14px;min-height:330px}
+.pod{width:28%;max-width:220px;display:flex;flex-direction:column;justify-content:flex-end;opacity:0;transform:translateY(30px) scale(.92);transition:.5s ease}
+.pod.show{opacity:1;transform:translateY(0) scale(1)}
+.pod .team{font-weight:1000;font-size:20px;margin-bottom:8px;min-height:50px;display:flex;align-items:end;justify-content:center}
+.pod .pts{font-size:15px;color:#cbd5e1;margin-bottom:8px}
+.pod .block{border-radius:18px 18px 6px 6px;display:flex;align-items:center;justify-content:center;font-size:46px;font-weight:1000;border:1px solid #49657a}
+.p1 .block{height:220px;background:linear-gradient(#6b5a13,#3c3210)}
+.p2 .block{height:170px;background:linear-gradient(#52606d,#273746)}
+.p3 .block{height:130px;background:linear-gradient(#6b4423,#3b2717)}
+.p1{order:2}.p2{order:1}.p3{order:3}
+#podiumClose{margin-top:22px;min-width:220px}
+@media(max-width:650px){#podium{gap:7px}.pod{width:32%}.pod .team{font-size:14px}.p1 .block{height:180px}.p2 .block{height:140px}.p3 .block{height:105px}}
+
+</style>
+<div id="liveBox">
+  <h3>📡 Votação conectada</h3>
+  <div class="liveRow"><span>Status</span><b id="liveStatus">conectando...</b></div>
+  <div class="liveRow"><span>Respostas</span><b class="liveCount" id="liveCount">0/0</b></div>
+  <div id="liveVoteText" class="tiny">Nenhuma votação aberta.</div>
+  <img id="liveQR" alt="QR Code dos alunos">
+  <div class="tiny" id="liveURL"></div>
+  <div class="liveActions"><button class="btn warn" id="closeVoteNow">Encerrar votação</button></div>
+</div>
+
+<div id="podiumOverlay">
+  <div id="podiumCard">
+    <div class="ey">CLASSIFICAÇÃO ATUAL</div>
+    <h2>🏆 Pódio EduTrack</h2>
+    <p>Após a rodada</p>
+    <div id="podium">
+      <div class="pod p2" id="pod2"><div class="team"></div><div class="pts"></div><div class="block">🥈</div></div>
+      <div class="pod p1" id="pod1"><div class="team"></div><div class="pts"></div><div class="block">🥇</div></div>
+      <div class="pod p3" id="pod3"><div class="team"></div><div class="pts"></div><div class="block">🥉</div></div>
+    </div>
+    <button class="btn primary" id="podiumClose">VOLTAR AO TABULEIRO</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const socket=io();
+  let currentVoteId=null;
+  let voteBusy=false;
+
+  function studentURL(){
+    return location.origin + '/aluno';
+  }
+  function teamSnapshot(){
+    return (S.teams||[]).map(t=>({
+      id:t.id,name:t.name,lane:t.lane,pos:t.pos,points:t.points,
+      blocked:!!t.blocked,immune:!!t.immune,eliminated:!!t.eliminated
+    }));
+  }
+  function syncGame(){
+    if(!socket.connected || !S.started)return;
+    socket.emit('professor:state',{teams:teamSnapshot(),turnTeamId:cur()?cur().id:null,turnCount:S.turnCount||1});
+  }
+  function eligibleActive(){
+    return S.teams.filter(t=>!t.eliminated&&!t.blocked).map(t=>t.id);
+  }
+  function setLive(text,count,total){
+    const s=document.getElementById('liveVoteText');
+    const c=document.getElementById('liveCount');
+    if(s)s.textContent=text||'';
+    if(c)c.textContent=`${count||0}/${total||0}`;
+  }
+
+  function showPodium(){
+    const active=(S.teams||[]).filter(t=>!t.eliminated).sort((a,b)=>b.points-a.points||b.pos-a.pos).slice(0,3);
+    if(!active.length)return;
+    [1,2,3].forEach((rank,i)=>{
+      const el=document.getElementById('pod'+rank);
+      if(!el)return;
+      const t=active[i];
+      el.style.display=t?'flex':'none';
+      el.classList.remove('show');
+      if(t){
+        el.querySelector('.team').textContent=t.name;
+        el.querySelector('.pts').textContent=`${t.points} pts • Casa ${t.pos}`;
+      }
+    });
+    const ov=document.getElementById('podiumOverlay');
+    ov.classList.add('show');
+    // estilo Kahoot: 3º, depois 2º, depois 1º
+    const reveal=[3,2,1];
+    reveal.forEach((rank,i)=>setTimeout(()=>{
+      const el=document.getElementById('pod'+rank);
+      if(el && el.style.display!=='none')el.classList.add('show');
+    },350+i*650));
+    clearTimeout(window.__podiumTimer);
+    window.__podiumTimer=setTimeout(()=>ov.classList.remove('show'),6500);
+  }
+  document.getElementById('podiumClose').onclick=()=>{
+    clearTimeout(window.__podiumTimer);
+    document.getElementById('podiumOverlay').classList.remove('show');
+  };
+  function openVote(cfg){
+    if(voteBusy || !cfg || !cfg.question)return;
+    voteBusy=true;
+    const payload={
+      question:cfg.question,
+      optionCount:cfg.optionCount,
+      correctIndex:cfg.correctIndex,
+      eligibleTeamIds:cfg.eligibleTeamIds,
+      duration:cfg.duration||30,
+      kind:cfg.kind
+    };
+    socket.emit('professor:openVote',payload,ack=>{
+      voteBusy=false;
+      if(!ack||!ack.ok){toast('Não foi possível abrir a votação conectada.');return;}
+      currentVoteId=ack.voteId;
+      setLive(`Votação aberta • ${cfg.kind}`,0,cfg.eligibleTeamIds.length);
+    });
+  }
+
+  socket.on('connect',()=>{
+    const st=document.getElementById('liveStatus'); if(st){st.textContent='online';st.style.color='#86efac'}
+    const u=studentURL();
+    const url=document.getElementById('liveURL'); if(url)url.textContent=u;
+    const qr=document.getElementById('liveQR'); if(qr)qr.src='/qr.png?url='+encodeURIComponent(u);
+    syncGame();
+  });
+  socket.on('disconnect',()=>{
+    const st=document.getElementById('liveStatus'); if(st){st.textContent='offline';st.style.color='#fda4af'}
+  });
+  socket.on('vote:progress',d=>{
+    if(d.voteId!==currentVoteId)return;
+    setLive(`Votação aberta • ${d.kind||''}`,d.count,d.total);
+  });
+  socket.on('vote:result',d=>{
+    if(d.voteId!==currentVoteId)return;
+    currentVoteId=null;
+    setLive('Votação encerrada — correção automática',d.count,d.total);
+    const results=d.results||{};
+    try{
+      if(d.kind==='collective' && M && M.kind==='q'){
+        R={};
+        Object.entries(results).forEach(([id,r])=>R[id]=!!r.correct);
+        reveal();
+        setTimeout(()=>{confirmResults();setTimeout(showPodium,900)},800);
+      }else if(d.kind==='duel' && M && M.kind==='duel'){
+        R={a:!!(results[M.ch]&&results[M.ch].correct),b:!!(results[M.op]&&results[M.op].correct)};
+        applyOneShotDuel();setTimeout(showPodium,1100);
+      }else if(d.kind==='critical' && M && M.kind==='critOne'){
+        R={a:!!(results[M.ch]&&results[M.ch].correct),b:!!(results[M.op]&&results[M.op].correct)};
+        revealCritOne();
+        setTimeout(()=>{critOneConfirm();setTimeout(showPodium,1000)},800);
+      }else if(d.kind==='final' && M && M.kind==='finalOne'){
+        const ok=!!(results[M.teamId]&&results[M.teamId].correct);
+        revealFinalOne();
+        setTimeout(()=>{finalOneResult(ok?1:0);setTimeout(showPodium,900)},800);
+      }
+    }catch(e){showGameError('Falha ao aplicar votação automática: '+e.message,location.href,null,null,e)}
+  });
+  socket.on('student:joined',syncGame);
+
+  document.getElementById('closeVoteNow').onclick=()=>{
+    if(!currentVoteId)return toast('Nenhuma votação aberta.');
+    socket.emit('professor:closeVote',{voteId:currentVoteId});
+  };
+
+  const oldRender=render;
+  render=function(){ oldRender(); syncGame(); };
+
+  const oldAsk=ask;
+  ask=function(t,p,type,qq){
+    oldAsk(t,p,type,qq);
+    const sec=type==='quick'?20:type==='board'?45:30;
+    setTimeout(()=>{
+      if(!M||M.kind!=='q')return;
+      openVote({
+        kind:'collective', question:M.q.text, optionCount:M.q.opts.length,
+        correctIndex:M.q.correct, eligibleTeamIds:eligibleActive(), duration:sec
+      });
+    },5200);
+  };
+
+  const oldDuelQ=duelQ;
+  duelQ=function(){
+    oldDuelQ();
+    setTimeout(()=>{
+      if(!M||M.kind!=='duel')return;
+      openVote({
+        kind:'duel',question:M.qq.text,optionCount:M.qq.opts.length,correctIndex:M.qq.correct,
+        eligibleTeamIds:[M.ch,M.op].filter(id=>{const t=team(id);return t&&!t.eliminated&&!t.blocked}),duration:30
+      });
+    },5200);
+  };
+
+  const oldCritical=critical;
+  critical=function(ch,p){
+    oldCritical(ch,p);
+    setTimeout(()=>{
+      if(!M||M.kind!=='critOne')return;
+      openVote({
+        kind:'critical',question:M.qq.text,optionCount:M.qq.opts.length,correctIndex:M.qq.correct,
+        eligibleTeamIds:[M.ch,M.op].filter(id=>{const t=team(id);return t&&!t.eliminated&&!t.blocked}),duration:35
+      });
+    },5200);
+  };
+
+  const oldFinal=final;
+  final=function(t){
+    oldFinal(t);
+    setTimeout(()=>{
+      if(!M||M.kind!=='finalOne')return;
+      openVote({
+        kind:'final',question:M.qq.text,optionCount:M.qq.opts.length,correctIndex:M.qq.correct,
+        eligibleTeamIds:[M.teamId],duration:35
+      });
+    },5200);
+  };
+})();
+</script>
+
+</body></html>

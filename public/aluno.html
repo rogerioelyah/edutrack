@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>EduTrack — Controle da Equipe</title>
+<style>
+:root{--bg:#07111f;--p:#0d1b2a;--b:#24435e;--t:#eef6ff;--m:#9fb3c8;--a:#38bdf8;--g:#22c55e;--r:#fb7185;--y:#fbbf24}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(#050a12,#07111f 45%,#081728);color:var(--t);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+main{max-width:620px;margin:auto;padding:16px}.card{background:#0a1828;border:1px solid #1e3a53;border-radius:20px;padding:18px;margin-bottom:12px}
+h1{font-size:25px;margin:3px 0 12px}.muted{color:var(--m)}select,button{font:inherit}select{width:100%;padding:14px;border-radius:12px;background:#10263d;color:white;border:1px solid var(--b)}
+button{border:0;border-radius:16px;font-weight:1000;color:white}.join{width:100%;padding:14px;margin-top:10px;background:#0284c7}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ans{height:105px;font-size:42px;background:#17384d;border:2px solid #31526c}.ans:disabled{opacity:.32}.ans.sel{outline:4px solid #fbbf24;background:#314016}
+.score{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.metric{background:#0d2134;border:1px solid #294a65;border-radius:12px;padding:10px;text-align:center}.metric b{display:block;font-size:24px}
+.board{width:100%;border-collapse:collapse;font-size:13px}.board td{padding:7px;border-bottom:1px solid #18344d}.me{background:#0e3550}
+.status{font-weight:900}.ok{color:#86efac}.bad{color:#fda4af}.wait{color:#fde68a}
+</style></head><body><main>
+<div class="card"><div class="muted">EduTrack — controle da equipe</div><h1>📱 Resposta + placar</h1>
+<div id="joinPane"><select id="teamSelect"><option>Carregando equipes...</option></select><button class="join" id="joinBtn">ENTRAR COMO EQUIPE</button></div>
+<div id="who" class="status wait" style="margin-top:10px">Conectando...</div></div>
+
+<div class="card"><div class="muted">Votação</div><h1 id="voteTitle">Aguardando questão</h1>
+<div class="answers" id="answers"></div>
+<div id="voteMsg" class="status wait" style="margin-top:12px">Quando a questão abrir, os botões serão liberados.</div></div>
+
+<div class="card"><div class="muted">Minha equipe</div><div class="score">
+<div class="metric"><span>Pontos</span><b id="myPts">—</b></div>
+<div class="metric"><span>Casa</span><b id="myPos">—</b></div>
+<div class="metric"><span>Pista</span><b id="myLane">—</b></div>
+</div><div id="myStatus" class="status" style="margin-top:10px"></div></div>
+
+<div class="card"><div class="muted">Placar geral</div><table class="board"><tbody id="scoreboard"></tbody></table></div>
+</main>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket=io();let myTeamId=localStorage.getItem('edutrackTeamId')||null;let game=null;let vote=null;let voted=false;
+const $=id=>document.getElementById(id);
+function renderAnswers(n=4){
+ const letters=['A','B','C','D','E'];
+ $('answers').innerHTML=letters.slice(0,n).map((x,i)=>`<button class="ans" data-i="${i}" disabled>${x}</button>`).join('');
+ document.querySelectorAll('.ans').forEach(b=>b.onclick=()=>cast(Number(b.dataset.i),b));
+}
+renderAnswers(4);
+function renderGame(){
+ if(!game)return;
+ $('teamSelect').innerHTML=game.teams.filter(t=>!t.eliminated).map(t=>`<option value="${t.id}" ${t.id===myTeamId?'selected':''}>${t.name} • Pista ${t.lane}</option>`).join('');
+ const me=game.teams.find(t=>t.id===myTeamId);
+ if(me){$('who').textContent=`✅ ${me.name}`;$('who').className='status ok';$('myPts').textContent=me.points;$('myPos').textContent=me.pos;$('myLane').textContent=me.lane;
+ $('myStatus').textContent=me.eliminated?'🔴 Eliminada':me.blocked?'⛔ Bloqueada':me.immune?'🛡️ Imune':'🟢 Ativa';}
+ $('scoreboard').innerHTML=[...game.teams].sort((a,b)=>b.points-a.points||b.pos-a.pos).map((t,i)=>`<tr class="${t.id===myTeamId?'me':''}"><td>${i+1}º</td><td><b>${t.name}</b></td><td>${t.points} pts</td><td>Casa ${t.pos}</td></tr>`).join('');
+ applyVoteState();
+}
+function applyVoteState(){
+ const me=game&&game.teams.find(t=>t.id===myTeamId);
+ const eligible=vote&&vote.eligibleTeamIds&&vote.eligibleTeamIds.includes(myTeamId);
+ const open=vote&&vote.open&&eligible&&!voted&&me&&!me.blocked&&!me.eliminated;
+ document.querySelectorAll('.ans').forEach(b=>b.disabled=!open);
+ if(vote&&vote.open){
+   $('voteTitle').textContent='Escolha sua alternativa';
+   if(!eligible)$('voteMsg').textContent=me&&me.blocked?'🔒 Equipe bloqueada — acompanha, mas não vota.':'Você acompanha esta questão, mas não participa.';
+   else if(voted)$('voteMsg').textContent='✅ Resposta registrada. Aguarde o encerramento.';
+   else $('voteMsg').textContent='Votação aberta. Apenas uma resposta é aceita.';
+ }else{$('voteTitle').textContent='Aguardando questão';$('voteMsg').textContent='Quando a questão abrir, os botões serão liberados.'}
+}
+function cast(i,btn){
+ if(!vote||!vote.open||voted||!myTeamId)return;
+ voted=true;document.querySelectorAll('.ans').forEach(b=>{b.disabled=true;b.classList.remove('sel')});btn.classList.add('sel');
+ socket.emit('student:vote',{voteId:vote.voteId,teamId:myTeamId,choice:i},ack=>{
+   if(!ack||!ack.ok){voted=false;applyVoteState();$('voteMsg').textContent=ack&&ack.message?ack.message:'Não foi possível registrar.'}
+ });
+ applyVoteState();
+}
+$('joinBtn').onclick=()=>{
+ myTeamId=$('teamSelect').value;if(!myTeamId)return;
+ localStorage.setItem('edutrackTeamId',myTeamId);socket.emit('student:join',{teamId:myTeamId});renderGame();
+};
+socket.on('connect',()=>{socket.emit('student:hello',{teamId:myTeamId});$('who').textContent='Conectado. Escolha sua equipe.'});
+socket.on('game:state',g=>{game=g;renderGame()});
+socket.on('vote:open',v=>{vote=v;voted=!!(v.alreadyVotedTeamIds||[]).includes(myTeamId);renderAnswers(v.optionCount||4);applyVoteState()});
+socket.on('vote:closed',()=>{vote=null;voted=false;applyVoteState();document.querySelectorAll('.ans').forEach(b=>b.classList.remove('sel'))});
+</script></body></html>
